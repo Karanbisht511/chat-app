@@ -12,7 +12,7 @@
     "watch:build": "tsc --watch",
     "watch:server": "nodemon './dist/index.js' --watch './dist'",
     "tscVersion": "npx tsc --version",
-    "serverScript": "npm install typescript && npm install && npm run tscVersion && npm run build && npm start"
+    "serverScript": "npm install && npm list && npm run tscVersion && npm run build && npm start"
   },
   "keywords": [],
   "author": "",
