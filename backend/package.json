@@ -12,14 +12,13 @@
     "watch:build": "tsc --watch",
     "watch:server": "nodemon './dist/index.js' --watch './dist'",
     "tscVersion": "npx tsc --version",
-    "serverScript": "npm install && npm install typescript && Version && npm run build && npm start"
+    "serverScript": "npm install typescript && npm install && npm run tscVersion && npm run build && npm start"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "typescript": "^5.7.2",
     "@types/jsonwebtoken": "^9.0.7",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -36,7 +35,8 @@
     "socket.io": "^4.8.1",
     "ts-node": "^10.9.2",
     "tsc": "^2.0.4",
-    "types": "^0.1.1"
+    "types": "^0.1.1",
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
