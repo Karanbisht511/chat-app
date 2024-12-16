@@ -4,14 +4,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "npx tsc",
     "dev": "nodemon src/index.ts",
     "lint": "eslint ./src/**/.ts",
     "clean": "rimraf dist",
     "start": "node ./dist/index.js",
     "watch:build": "tsc --watch",
     "watch:server": "nodemon './dist/index.js' --watch './dist'",
-    "serverScript": "npm install && npm run build && npm start"
+    "tscVersion": "npx tsc --version",
+    "serverScript": "npm install && npm run tscVersion && npm run build && npm start"
   },
   "keywords": [],
   "author": "",
