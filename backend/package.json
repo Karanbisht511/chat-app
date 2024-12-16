@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc",
+    "build": "tsc",
     "dev": "nodemon src/index.ts",
     "lint": "eslint ./src/**/.ts",
     "clean": "rimraf dist",
