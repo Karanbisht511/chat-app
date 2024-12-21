@@ -11,8 +11,7 @@
     "start": "node ./dist/index.js",
     "watch:build": "tsc --watch",
     "watch:server": "nodemon './dist/index.js' --watch './dist'",
-    "tscVersion": "npx tsc --version",
-    "serverScript": "npm install && npm list && npm run tscVersion && npm run build && npm start"
+    "serverScript": "npm install && npm list && npm run build && npm start"
   },
   "keywords": [],
   "author": "",
@@ -34,7 +33,6 @@
     "path": "^0.12.7",
     "socket.io": "^4.8.1",
     "ts-node": "^10.9.2",
-    "tsc": "^2.0.4",
     "types": "^0.1.1",
     "typescript": "^5.7.2"
   },

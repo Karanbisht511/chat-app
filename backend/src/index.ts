@@ -8,14 +8,14 @@ import { connectMongo } from "./dbConfig"
 
 const app = express();
 
-export const corsOptions: cors.CorsOptions = {
-    origin: ['http://localhost:3000', '*'], // Allowed origins
-    methods: ['GET', 'POST'], // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
+// export const corsOptions: cors.CorsOptions = {
+//     origin: ['*'], // Allowed origins
+//     methods: ['GET', 'POST'], // Allowed methods
+//     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+//     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json())
 export const server = http.createServer(app)
 connectMongo()

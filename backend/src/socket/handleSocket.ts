@@ -1,14 +1,16 @@
 import { Server } from "socket.io";
-import { corsOptions, server } from "../index";
+import {  server } from "../index";
 import { User } from "../Model/user";
 import { UserMsg } from "../Model/message";
 
 export const runSockets = () => {
 
     try {
-        const io = new Server(server, {
-            cors: corsOptions
-        });
+        const io = new Server(server, 
+        //     {
+        //     cors: corsOptions
+        // }
+    );
 
         let usersMap = new Map();
         let liveUsers = new Map();
