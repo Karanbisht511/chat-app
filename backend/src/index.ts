@@ -10,7 +10,7 @@ const app = express();
 
 // export const corsOptions: cors.CorsOptions = {
 //     origin: ['*'], // Allowed origins
-//     methods: ['GET', 'POST'], // Allowed methods
+//     methods: ['*'], // Allowed methods
 //     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 //     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 // };

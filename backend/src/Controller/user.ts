@@ -2,10 +2,10 @@ import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 const { generateToken } = require("../Utils/JWTFunctions");
 import { User } from "../Model/user";
-// import { areValidCredentials } from "../Utils/validateCredentials";
 import { Friends, friends } from "../Model/friend";
 import { UserMsg } from '../Model/message'
-
+import { Messages } from "../Model/message";
+import { IMessages } from "../Model/message";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -170,4 +170,45 @@ export const placeUnreadMsgs = async (req: Request, res: Response) => {
       message: `${error}`
     })
   }
+}
+
+export const getChats = async (req: Request, res: Response) => {
+  const { username } = req.query;
+  const { friend } = req.body;
+  const index1 = `${username}to${friend}`;
+  const index2 = `${friend}to${username}`;
+  let index1Msgs = await Messages.find({ index: index1 }).sort({ 'messageArray.timeStamp': 1 });
+  let index2Msgs = await Messages.find({ index: index2 }).sort({ 'messageArray.timeStamp': 1 });
+  console.log(`${index1}:${index1Msgs}`);
+  console.log(`${index2}:${index2Msgs}`);
+
+  let msgByMe = index1Msgs[0].messageArray.map((e) => {
+    const msg = e.msgs;
+    const timeStamp = e.timeStamp;
+    return {
+      msg,
+      timeStamp,
+      "msgBy": "me",
+    }
+  })
+
+  let msgByFr = index2Msgs[0].messageArray.map((e) => {
+    const msg = e.msgs;
+    const timeStamp = e.timeStamp;
+    return {
+      msg,
+      timeStamp,
+      "msgBy": friend,
+    }
+  })
+  let messagess = msgByFr.concat(msgByMe)
+
+
+  res.status(200).json({
+    'messages': messagess.sort((a, b) => {
+      const time1 = new Date(a.timeStamp).getTime();
+      const time2 = new Date(b.timeStamp).getTime();
+      return time1 - time2;
+    })
+  })
 }

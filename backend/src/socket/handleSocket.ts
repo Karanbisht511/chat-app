@@ -1,34 +1,54 @@
 import { Server } from "socket.io";
-import {  server } from "../index";
+import { server } from "../index";
 import { User } from "../Model/user";
 import { UserMsg } from "../Model/message";
+import { saveMessageToDB } from "../DB/messages";
 
 export const runSockets = () => {
 
     try {
-        const io = new Server(server, 
-        //     {
-        //     cors: corsOptions
-        // }
-    );
+        const io = new Server(server,
+            {
+                cors: {
+                    origin: '*', // Allow all origins (use '*' for open access or specify specific origins)
+                    methods: ['GET', 'POST'], // Allow only these HTTP methods
+                    allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+                    credentials: true, // Allow credentials (cookies, authorization headers)
+                }
+            }
+        );
 
         let usersMap = new Map();
-        let liveUsers = new Map();
+        let liveUsers = new Map<string, string>();
         // let liveGroups = []
         let newLiveGroup: string;
         let currentUser: string;
-        io.on('connection', (socket) => {
+        io.on('connection',async (socket) => {
+            console.log("socketId:", socket.id);
 
-            socket.on('chat message', (data) => {
+            socket.on('chat message', async (data) => {
+                console.log('---------chat message-----------')
+                console.log('liveUsers:', liveUsers)
                 const { message, from, toSend } = data;
+                console.log('chat message listener')
                 if (data.isGroupChat === true) {
                     // groupChat
 
                 } else {
                     //    one2one chat
-                    console.log("toSend:", toSend);
+                    console.log("data:", JSON.stringify(data));
 
-                    io.to(usersMap.get(toSend)).emit('chat message', { message, from });
+                    const receiverSocket = liveUsers.get(toSend)
+
+                    console.log("Receiver socket found:", receiverSocket);
+                    if (receiverSocket) {
+                        console.log(`Emitting to socket: ${receiverSocket}`);
+                        io.to(receiverSocket).emit("--receive message--", { message, from });
+                       await saveMessageToDB(`${from}to${toSend}`,message);
+                    } else {
+                        console.log(`No active socket found for user: ${toSend}`);
+                    }
+
                 }
             });
 
@@ -61,13 +81,14 @@ export const runSockets = () => {
             // });
 
             socket.on('When user login', async (user) => {
+                console.log('----------When user login------');
                 console.log('Received username:', user);
 
                 try {
                     // Map the user to their socket ID
                     console.log(`user:socket.id ${user}:${socket.id}`);
                     liveUsers.set(user, socket.id);
-
+                    console.log('liveUsers:', liveUsers)
                     // Validate in DB if the user already exists or fetch active users
                     currentUser = user;
 
@@ -80,14 +101,14 @@ export const runSockets = () => {
                     if (activeUsers.length === 0) {
                         console.log('No active users found in the database.');
                     } else {
-                        console.log('Active users:', activeUsers);
+                        // console.log('Active users:', activeUsers);
                     }
 
                     // push active users to live users
                     io.emit('active users', activeUsers);
 
                     const unreadMsgs = await UserMsg.findOne({ username: user });
-                    console.log('undelivered messages:', unreadMsgs);
+                    // console.log('undelivered messages:', unreadMsgs);
 
                     io.to(liveUsers.get(user)).emit('undelivered messages', { message: unreadMsgs })
                 } catch (error) {
@@ -108,6 +129,7 @@ export const runSockets = () => {
             //             })
 
             socket.on('disconnect', async () => {
+                console.log('--------disconnect event--------');
 
                 try {
                     console.log('current User:', currentUser);
@@ -117,7 +139,7 @@ export const runSockets = () => {
 
                         console.log('user disconnected');
                         let activeUser = await User.find({ active: true });
-                        console.log('active user:', activeUser);
+                        // console.log('active user:', activeUser);
 
                         io.emit('active users', activeUser);
                     }

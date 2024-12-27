@@ -15,6 +15,7 @@ function Login() {
             console.log('Result:', loginRes.data);
             sessionStorage.setItem('JWTToken', loginRes.data?.token)
             sessionStorage.setItem('isUserAuthenticated', loginRes.data?.isUserAuthenticated)
+            sessionStorage.setItem('username', loginRes.data?.username)
             window.location.reload();
         } catch (error) {
             console.log("error:", error);
@@ -25,7 +26,7 @@ function Login() {
         <div>
             <p>Login Page</p>
             <div>
-                username: <input  type="text" name="username" value={username} onChange={e => setUsername(e.target.value)} />
+                username: <input type="text" name="username" value={username} onChange={e => setUsername(e.target.value)} />
                 Password: <input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)} />
             </div>
             <button onClick={LoginUser}>login</button>

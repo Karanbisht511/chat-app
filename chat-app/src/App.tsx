@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Chatpage from "./components/Chatpage";
 import './App.css'
 import { useEffect, useState } from "react";
+import { Message } from "./components/Message";
 
 function App() {
   const [userAuth, setUserAuth] = useState(false)
@@ -23,7 +24,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={userAuth ? <Chatpage /> : <Login />} />
+        <Route path="/" element={userAuth ? <Chatpage /> : <Login />} >
+          <Route path="/message/:friend" element={<Message />} />
+        </ Route>
       </Routes>
     </BrowserRouter>
   )
