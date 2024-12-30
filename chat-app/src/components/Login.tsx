@@ -1,25 +1,18 @@
-import { useState } from "react"
+import { useState,SyntheticEvent } from "react"
 import { Link } from "react-router"
-import axios from "axios";
+import { useAppDispatch } from "../utils/utils";
+import { loginUser } from "../stateManagement/authenticationSlice";
 
 function Login() {
-
+    const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     // const loginRes;
 
-    const LoginUser = async () => {
+    const LoginUser = async (e:SyntheticEvent) => {
+        e.preventDefault();
         const payload = { username, password }
-        try {
-            const loginRes = await axios.post('http://localhost:9000/api/users/login', payload);
-            console.log('Result:', loginRes.data);
-            sessionStorage.setItem('JWTToken', loginRes.data?.token)
-            sessionStorage.setItem('isUserAuthenticated', loginRes.data?.isUserAuthenticated)
-            sessionStorage.setItem('username', loginRes.data?.username)
-            window.location.reload();
-        } catch (error) {
-            console.log("error:", error);
-        }
+        dispatch(loginUser(payload));
     }
 
     return (

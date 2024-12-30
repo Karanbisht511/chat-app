@@ -1,44 +1,32 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react';
+// import axios from 'axios'
+// import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import './FriendList.css'
 
-const FriendList = () => {
-  const [actives, setActives] = useState([])
+interface PList {
+  friendList: string[];
+  users:string[]
+}
 
-  useEffect(() => {
-    const username = sessionStorage.getItem('username')
-    console.log('username:', username);
-
-    if (username)
-      getActiveUser(username);
-  }, []);
-
-  async function getActiveUser(username: string) {
-    const token = sessionStorage.getItem("JWTToken");
-    try {
-      const res = await axios.get(`http://localhost:9000/api/friends/getFriend?username=${username}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log('username:', username);
-
-      console.log("res:", res);
-
-      setActives(res.data?.friendList);
-    } catch (error) {
-      console.log("error:", error);
-
-    }
-  }
+const FriendList: React.FC<PList> = ({friendList,users}) => {
 
   return (
-    <div>
-      <span>ActiveUser</span>
-      <div> 
-        {actives.length > 0 ? actives.map((e) => { return <Link to={`/message/${e}`} key={e} ><li>{e}</li></Link> }) : "No Active Friends"}
+    <div className='chatList h-full'>
+      <div className='user-name'><h1>chats</h1></div>
+      <div className='user'><input type="text" name="" id="" placeholder='Search' style={{border:'2px solid black'}} /></div>
+      <div>
+        {friendList.length > 0 ? friendList.map((e:string) => { return <Link to={`/message/${e}`} key={e}><div className='user' style={{border:'2px solid black'}}>{e}</div></Link> }) : "No Active Friends"}
       </div>
-
+      <div>
+        {users.length > 0 ? users.map((e:string) => { return <Link to={`/message/${e}`} key={e} ><div className='user' style={{border:'2px solid black'}}>{e}</div></Link> }) : "No Active Friends"}
+      </div>
+      <div>
+      <div className='user-name'><h1>Groups</h1></div>
+        <div>
+          <Link to="/groupChats/Group1"><div className='user' style={{border:'2px solid black'}}>Group1</div></Link>
+          <Link to="/groupChats/Group2"><div className='user' style={{border:'2px solid black'}}>Group2</div></Link>
+        </div>
+      </div>
     </div>
   )
 }

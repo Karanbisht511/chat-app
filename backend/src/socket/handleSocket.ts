@@ -18,12 +18,9 @@ export const runSockets = () => {
             }
         );
 
-        let usersMap = new Map();
         let liveUsers = new Map<string, string>();
-        // let liveGroups = []
-        let newLiveGroup: string;
         let currentUser: string;
-        io.on('connection',async (socket) => {
+        io.on('connection', async (socket) => {
             console.log("socketId:", socket.id);
 
             socket.on('chat message', async (data) => {
@@ -31,25 +28,21 @@ export const runSockets = () => {
                 console.log('liveUsers:', liveUsers)
                 const { message, from, toSend } = data;
                 console.log('chat message listener')
-                if (data.isGroupChat === true) {
-                    // groupChat
+                //    one2one chat
+                console.log("data:", JSON.stringify(data));
 
+                const receiverSocket = liveUsers.get(toSend)
+
+                console.log("Receiver socket found:", receiverSocket);
+                if (receiverSocket) {
+                    console.log(`Emitting to socket: ${receiverSocket}`);
+                    io.to(receiverSocket).emit("--receive message--", { message, from });
+                    await saveMessageToDB(`${from}to${toSend}`, message,from);
                 } else {
-                    //    one2one chat
-                    console.log("data:", JSON.stringify(data));
-
-                    const receiverSocket = liveUsers.get(toSend)
-
-                    console.log("Receiver socket found:", receiverSocket);
-                    if (receiverSocket) {
-                        console.log(`Emitting to socket: ${receiverSocket}`);
-                        io.to(receiverSocket).emit("--receive message--", { message, from });
-                       await saveMessageToDB(`${from}to${toSend}`,message);
-                    } else {
-                        console.log(`No active socket found for user: ${toSend}`);
-                    }
-
+                    console.log(`No active socket found for user: ${toSend}`);
                 }
+
+
             });
 
             // socket.on('register user', async (user) => {
@@ -127,6 +120,17 @@ export const runSockets = () => {
             //             socket.on(`${newLiveGroup} message`, () => {
             // socket.
             //             })
+
+            socket.on('join-room', (room) => {
+                socket.join(room)
+                console.log(`${socket.id} joined group:${room}`);
+            })
+
+            socket.on('send-room-message', async ({ room, from, message }) => {
+                console.log(room, ' ', from, ' ', message);
+                io.to(room).emit('---receive-room-message---', ({ from, message }));
+                await saveMessageToDB(room, message, from);
+            })
 
             socket.on('disconnect', async () => {
                 console.log('--------disconnect event--------');

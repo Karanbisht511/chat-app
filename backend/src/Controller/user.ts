@@ -5,7 +5,8 @@ import { User } from "../Model/user";
 import { Friends, friends } from "../Model/friend";
 import { UserMsg } from '../Model/message'
 import { Messages } from "../Model/message";
-import { IMessages } from "../Model/message";
+import { Message } from "../Model/message";
+
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -173,42 +174,122 @@ export const placeUnreadMsgs = async (req: Request, res: Response) => {
 }
 
 export const getChats = async (req: Request, res: Response) => {
-  const { username } = req.query;
-  const { friend } = req.body;
-  const index1 = `${username}to${friend}`;
-  const index2 = `${friend}to${username}`;
-  let index1Msgs = await Messages.find({ index: index1 }).sort({ 'messageArray.timeStamp': 1 });
-  let index2Msgs = await Messages.find({ index: index2 }).sort({ 'messageArray.timeStamp': 1 });
-  console.log(`${index1}:${index1Msgs}`);
-  console.log(`${index2}:${index2Msgs}`);
+  try {
+    const { username } = req.query;
+    const { friend } = req.body;
 
-  let msgByMe = index1Msgs[0].messageArray.map((e) => {
-    const msg = e.msgs;
-    const timeStamp = e.timeStamp;
-    return {
-      msg,
-      timeStamp,
-      "msgBy": "me",
+    if (!username || !friend) {
+      res.status(400).json({
+        devMessage: 'Bad Request'
+      });
+      return;
     }
-  })
 
-  let msgByFr = index2Msgs[0].messageArray.map((e) => {
-    const msg = e.msgs;
-    const timeStamp = e.timeStamp;
-    return {
-      msg,
-      timeStamp,
-      "msgBy": friend,
+    const index1 = `${username}to${friend}`;
+    const index2 = `${friend}to${username}`;
+
+    const index1Msgs = await Messages.find({ index: index1 }).sort({ 'messageArray.timeStamp': 1 });
+    const index2Msgs = await Messages.find({ index: index2 }).sort({ 'messageArray.timeStamp': 1 });
+
+    console.log(`${index1}:`, JSON.stringify(index1Msgs, null, 2));
+    console.log(`${index2}:`, JSON.stringify(index2Msgs, null, 2));
+
+    let messagess: Array<Message> = [];
+
+    // Process index1Msgs
+    if (index1Msgs.length > 0 && index1Msgs[0].messageArray?.length > 0) {
+      const msgByMe = index1Msgs[0].messageArray.map((e) => ({
+        msg: e.msg,
+        timeStamp: e.timeStamp,
+        msgBy: 'me',
+      }));
+      messagess.push(...msgByMe);
     }
-  })
-  let messagess = msgByFr.concat(msgByMe)
 
+    // Process index2Msgs
+    if (index2Msgs.length > 0 && index2Msgs[0].messageArray?.length > 0) {
+      const msgByFr = index2Msgs[0].messageArray.map((e) => ({
+        msg: e.msg,
+        timeStamp: e.timeStamp,
+        msgBy: friend,
+      }));
+      messagess.push(...msgByFr);
+    }
 
-  res.status(200).json({
-    'messages': messagess.sort((a, b) => {
-      const time1 = new Date(a.timeStamp).getTime();
-      const time2 = new Date(b.timeStamp).getTime();
-      return time1 - time2;
+    // Check if no messages were found
+    if (
+      (!index1Msgs.length || !index1Msgs[0]?.messageArray?.length) &&
+      (!index2Msgs.length || !index2Msgs[0]?.messageArray?.length)
+    ) {
+      console.log('no data found');
+      res.status(404).json({
+        message: 'no messages found'
+      });
+      return;
+    }
+
+    // console.log('messages:',JSON.stringify(messagess));
+    
+
+    res.status(200).json({
+      'messages': messagess.sort((a, b) => {
+        const time1 = new Date(a.timeStamp).getTime();
+        const time2 = new Date(b.timeStamp).getTime();
+        return time1 - time2;
+      })
     })
-  })
+  } catch (error) {
+    res.status(500).json({
+      "message": 'internal server error'
+    })
+  }
+}
+
+export const getGroupChats = async (req: Request, res: Response) => {
+  console.log('-----Group chat history-------');
+
+
+  try {
+    const { index } = req.query;
+    if (!index) {
+      res.status(400).json({
+        devMessage: 'Bad Request'
+      });
+      return;
+    }
+
+    const indexMsgs = await Messages.find({ index }).sort({ 'messageArray.timeStamp': 1 });
+    // console.log('msgs:', indexMsgs);
+
+    // Check if no messages were found
+    if (!indexMsgs.length || !indexMsgs[0]?.messageArray?.length) {
+      console.log('no data found');
+      res.status(404).json({
+        message: 'no messages found'
+      });
+      return;
+    }
+
+    let messagess: Array<Message> = [];
+
+    // Process indexMsgs
+    if (indexMsgs.length > 0 && indexMsgs[0].messageArray?.length > 0) {
+      const msg = indexMsgs[0].messageArray.map((e) => ({
+        msg: e.msg,
+        timeStamp: e.timeStamp,
+        msgBy: e.msgBy,
+      }));
+      messagess.push(...msg);
+    }
+    console.log("messagess:", JSON.stringify(messagess));
+
+    res.status(200).json({
+      'messages': messagess
+    })
+
+  } catch (error) {
+    res.status(500).json({
+      "message": 'internal server error'
+    })
+  }
 }

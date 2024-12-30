@@ -1,10 +1,11 @@
 import { Schema, Document, model } from "mongoose";
 
+export interface Message { timeStamp: Date, msg: string, msgBy?: string }
+
 export interface IMessages extends Document {
     index: string,
-    messageArray: [{timeStamp: Date,msgs:string}]
+    messageArray: [Message]
 }
-
 
 export interface userMsg extends Document {
     username: string;
@@ -17,8 +18,8 @@ const NDmsg = new Schema({
 })
 
 const messagesSchema = new Schema({
-    index:{type:String},
-    messageArray:{type:Array<{timestamp:Date,msg:string}>}
+    index: { type: String },
+    messageArray: { type: Array<Message> }
 })
 
 const usermsgSchema = new Schema({
@@ -27,4 +28,4 @@ const usermsgSchema = new Schema({
 });
 
 export const UserMsg = model<userMsg>("userMsg", usermsgSchema);
-export const Messages= model<IMessages>('messages',messagesSchema)
+export const Messages = model<IMessages>('messages', messagesSchema)
