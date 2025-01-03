@@ -2,37 +2,21 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import Login from './components/Login';
 import Chatpage from "./components/Chatpage";
-import { useEffect, useState } from "react";
-import { Message } from "./components/Message";
-import GroupChat from "./components/GroupChat";
+import { Messages} from "./components/Messages";
 import { useSelector } from "react-redux";
 import { RootState } from "./stateManagement/store";
 
+
 function App() {
   const isLoggedIn = useSelector((state: RootState) => state.login.status)
-  console.log('isLoggedIn:',isLoggedIn);
-  
-  const [userAuth, setUserAuth] = useState(false)
-  useEffect(() => {
-    let authPresent = sessionStorage.getItem('isUserAuthenticated');
-    console.log(authPresent);
-
-    if (authPresent === 'true' && typeof authPresent !== null) {
-      console.log('authPresent:', authPresent);
-      setUserAuth(true);
-    }
-
-    console.log('userAuth:', userAuth);
-
-  }, [isLoggedIn])
+  console.log('isLoggedIn:', isLoggedIn);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={(isLoggedIn !== 'idle') ? <Chatpage /> : <Login />} >
-          <Route path="/message/:friend" element={<Message />} />
-          <Route path="/groupChats/:groupName" element={<GroupChat />} />
-        </ Route>
+        <Route path="/" element={(isLoggedIn !== 'idle' && isLoggedIn !== 'failed') ? <Chatpage /> : <Login />} >
+          <Route path="/message/:indexName" element={<Messages />} />
+          </ Route>
       </Routes>
     </BrowserRouter>
   )

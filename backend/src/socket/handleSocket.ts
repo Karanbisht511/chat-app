@@ -26,22 +26,29 @@ export const runSockets = () => {
             socket.on('chat message', async (data) => {
                 console.log('---------chat message-----------')
                 console.log('liveUsers:', liveUsers)
-                const { message, from, toSend } = data;
+                const { message, from, toSend, isGroup } = data;
                 console.log('chat message listener')
-                //    one2one chat
-                console.log("data:", JSON.stringify(data));
-
-                const receiverSocket = liveUsers.get(toSend)
-
-                console.log("Receiver socket found:", receiverSocket);
-                if (receiverSocket) {
-                    console.log(`Emitting to socket: ${receiverSocket}`);
-                    io.to(receiverSocket).emit("--receive message--", { message, from });
-                    await saveMessageToDB(`${from}to${toSend}`, message,from);
+                // console.log("data:", JSON.stringify(data));
+                if (isGroup) {
+                    console.log('group chat message');
+                    
+                    io.to(toSend).emit('--receive message--', { message, from })
                 } else {
-                    console.log(`No active socket found for user: ${toSend}`);
+                    //    one2one chat
+                    console.log('one to one chat message');
+                    const receiverSocket = liveUsers.get(toSend)
+                    console.log("Receiver socket found:", receiverSocket);
+                    if (receiverSocket) {
+                        console.log(`Emitting to socket: ${receiverSocket}`);
+                        const data={ message, from }
+                        console.log('data:',data);
+                        
+                        io.to(receiverSocket).emit("--receive message--", { message, from });
+                        await saveMessageToDB(`${from}to${toSend}`, message, from);
+                    } else {
+                        console.log(`No active socket found for user: ${toSend}`);
+                    }
                 }
-
 
             });
 
@@ -126,11 +133,11 @@ export const runSockets = () => {
                 console.log(`${socket.id} joined group:${room}`);
             })
 
-            socket.on('send-room-message', async ({ room, from, message }) => {
-                console.log(room, ' ', from, ' ', message);
-                io.to(room).emit('---receive-room-message---', ({ from, message }));
-                await saveMessageToDB(room, message, from);
-            })
+            // socket.on('send-room-message', async ({ room, from, message }) => {
+            //     console.log(room, ' ', from, ' ', message);
+            //     io.to(room).emit('---receive-room-message---', ({ from, message }));
+            //     await saveMessageToDB(room, message, from);
+            // })
 
             socket.on('disconnect', async () => {
                 console.log('--------disconnect event--------');

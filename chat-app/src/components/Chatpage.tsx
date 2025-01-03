@@ -4,20 +4,24 @@ import { socket } from '../socket'
 import FriendList from './FriendList'
 import { Outlet } from 'react-router';
 import './Chatpage.css'
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../stateManagement/store';
+import { useAppDispatch } from '../utils/utils';
+import { dashboard } from '../stateManagement/Dashboard/dashboardSlice';
 
 function Chatpage() {
+  const dispatch = useAppDispatch();
   // const [isConnected, setIsConnected] = useState(socket.connected);
   const [friendList, setFriendList] = useState<Array<string>>();
   const [allUsers, setAllusers] = useState<Array<string>>([]);
   const loginDetails = useSelector((state: RootState) => state.login.loginDetails)
   console.log("loginDetails:", loginDetails);
-
+  const dashboardDetails = useSelector((state: RootState) => state.dashboard.dashboard)
+  const username = sessionStorage.getItem('username')
 
   useEffect(() => {
-    getDashBoardDetails();
+
+    dispatch(dashboard());
     socket.on('connect', () => {
       console.log("Connected to socket server. Socket ID:", socket.id);
       // setIsConnected(true);
@@ -32,30 +36,20 @@ function Chatpage() {
       console.log('when user login event completed');
     }
 
-    return () => {
-      socket.disconnect();
-    };
+    // return () => {
+    //   socket.disconnect();
+    // };
 
-  }, [])
+  }, [dispatch, username])
 
-  async function getDashBoardDetails() {
-    const token = sessionStorage.getItem("JWTToken");
-    const username = sessionStorage.getItem("username")
-    try {
-      const res = await axios.get(`http://localhost:9000/api/users/dashboard?username=${username}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log("res:", res);
+  useEffect(() => {
+    console.log('dashboardDetails:', JSON.stringify(dashboardDetails));
 
-      setFriendList(res.data?.friendList);
-      setAllusers(res.data?.users)
-    } catch (error) {
-      console.log("error:", error);
-
+    if (dashboardDetails) {
+      setFriendList(dashboardDetails.friendList || []);
+      setAllusers(dashboardDetails.users || []);
     }
-  }
+  }, [dashboardDetails])
 
   return (
     <div className='chatpage-container flex h-screen' >

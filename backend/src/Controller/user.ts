@@ -101,6 +101,9 @@ export const userDashboard = async (req: Request, res: Response) => {
     const { username } = req.query;
     console.log('username:', username)
     const result: friends = await Friends.findOne({ username: username });
+    // console.log('friendList:',result.friendList);
+    console.log('results:',result);
+    
     const users = await User.find();
     let activeUser = await User.find({ active: true });
 
@@ -177,6 +180,7 @@ export const getChats = async (req: Request, res: Response) => {
   try {
     const { username } = req.query;
     const { friend } = req.body;
+console.log('username: ',username);
 
     if (!username || !friend) {
       res.status(400).json({
@@ -201,7 +205,7 @@ export const getChats = async (req: Request, res: Response) => {
       const msgByMe = index1Msgs[0].messageArray.map((e) => ({
         msg: e.msg,
         timeStamp: e.timeStamp,
-        msgBy: 'me',
+        msgBy: username as string,
       }));
       messagess.push(...msgByMe);
     }
@@ -228,8 +232,8 @@ export const getChats = async (req: Request, res: Response) => {
       return;
     }
 
-    // console.log('messages:',JSON.stringify(messagess));
-    
+    console.log('messages:',JSON.stringify(messagess));
+
 
     res.status(200).json({
       'messages': messagess.sort((a, b) => {

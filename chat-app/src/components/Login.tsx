@@ -1,13 +1,13 @@
 import { useState,SyntheticEvent } from "react"
 import { Link } from "react-router"
 import { useAppDispatch } from "../utils/utils";
-import { loginUser } from "../stateManagement/authenticationSlice";
+import { loginUser } from "../stateManagement/Authentication/loginSlice";
 
 function Login() {
     const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    // const loginRes;
+
 
     const LoginUser = async (e:SyntheticEvent) => {
         e.preventDefault();

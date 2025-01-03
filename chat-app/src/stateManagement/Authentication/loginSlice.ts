@@ -6,6 +6,36 @@ interface Icredentials {
     password: string
 }
 
+interface IinitState {
+    loginDetails: {
+        isUserAuthenticated: boolean;
+        token: string;
+        userInfo: {
+            email: string;
+            mobile: string;
+            username: string;
+        };
+        username: string;
+    };
+    status: string;
+    error: string;
+}
+
+const initialState: IinitState = {
+    loginDetails: {
+        isUserAuthenticated: false,
+        token: '',
+        userInfo: {
+            email: '',
+            mobile: '',
+            username: ''
+        },
+        username: ''
+    },
+    status: 'idle',
+    error: ''
+}
+
 export const loginUser = createAsyncThunk(
     'login',
     async (payload: Icredentials) => {
@@ -19,20 +49,16 @@ export const loginUser = createAsyncThunk(
 
 const loginSlice = createSlice({
     name: 'login',
-    initialState: {
-        loginDetails: {},
-        status: 'idle',
-        error: '',
-    },
+    initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.
-            addCase(loginUser.fulfilled, (state, action) => {
-                state.status = 'success';
-                state.loginDetails = action.payload;
-            })
+        builder
             .addCase(loginUser.pending, (state) => {
                 state.status = 'loading'
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.status = 'success';
+                state.loginDetails = action.payload;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.status = 'failed';

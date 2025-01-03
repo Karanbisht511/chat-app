@@ -3,7 +3,7 @@
 } */
 
 .user {
-    padding: 10px;
+    padding: 5px;
     color: white;
     margin: 5px;
     background-color: rgb(30, 94, 30);
@@ -12,4 +12,15 @@
 
 .user:hover {
     background-color: rgb(31, 186, 31);
+}
+
+.user-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid black;
+    margin: 5px;
 }
