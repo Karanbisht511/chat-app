@@ -18,6 +18,7 @@ function Chatpage() {
   console.log("loginDetails:", loginDetails);
   const dashboardDetails = useSelector((state: RootState) => state.dashboard.dashboard)
   const username = sessionStorage.getItem('username')
+  const newChatAdded=useSelector((state:RootState)=>state.addNewChat.status)
 
   useEffect(() => {
 
@@ -40,7 +41,7 @@ function Chatpage() {
     //   socket.disconnect();
     // };
 
-  }, [dispatch, username])
+  }, [dispatch, username,newChatAdded])
 
   useEffect(() => {
     console.log('dashboardDetails:', JSON.stringify(dashboardDetails));

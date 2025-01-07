@@ -8,6 +8,14 @@ export const addFriend = async (req: Request, res: Response) => {
         const { frToAdd } = req.body;
         console.log('username:', username);
         console.log('frToAdd:', frToAdd);
+
+        if (!username || !frToAdd) {
+            res.status(400).json({
+                devMessage: 'Bad Request'
+            });
+            return;
+        }
+
         const userExist = await Friends.findOne({ username });
         if (userExist) {
             await Friends.findOneAndUpdate({ username: username }, { '$push': { 'friendList': frToAdd } })
@@ -30,14 +38,21 @@ export const addFriend = async (req: Request, res: Response) => {
 export const deleteFriend = async (req: Request, res: Response) => {
     try {
         const { username } = req.query;
-        const { frToAdd } = req.body;
+        const { frToDelete } = req.body;
         console.log('username:', username);
-        console.log('frToAdd:', frToAdd);
+        console.log('frToAdd:', frToDelete);
 
-        await Friends.findOneAndUpdate({ username: username }, { '$pull': { 'friendList': frToAdd } })
+        if (!username || !frToDelete) {
+            res.status(400).json({
+                devMessage: 'Bad Request'
+            });
+            return;
+        }
+
+        await Friends.findOneAndUpdate({ username: username }, { '$pull': { 'friendList': frToDelete } })
 
         res.status(200).json({
-            message: `${frToAdd} is deleted from friend list`
+            message: `${frToDelete} is deleted from friend list`
         });
     } catch (error) {
         res.status(500).json({
@@ -51,6 +66,14 @@ export const getFriend = async (req: Request, res: Response) => {
     try {
         const { username } = req.query;
         console.log('username:', username);
+
+        if (!username) {
+            res.status(400).json({
+                devMessage: 'Bad Request'
+            });
+            return;
+        }
+
         const result: friends = await Friends.findOne({ username: username });
         if (result)
             res.status(200).json({

@@ -2,14 +2,14 @@ import { SyntheticEvent, useEffect, useState } from 'react'
 import { useParams } from 'react-router';
 import { socket } from '../socket'
 import "./Chats.css"
-
 import { RootState } from '../stateManagement/store';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../utils/utils';
 import { chatHistory } from '../stateManagement/Messages/messagesSlice';
 import ProfileIcon from './ProfileIcon';
-
 import { useLocation } from 'react-router';
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export interface IoldMsgs {
     msg: string;
@@ -36,7 +36,7 @@ export const Messages = () => {
             dispatch(chatHistory({ indexName, isGroup }))
         }
 
-        if(isGroup){
+        if (isGroup) {
             console.log('isGroup:indexName', isGroup, indexName);
             console.log('Joining the group chat');
             socket.emit('join-room', indexName);
@@ -103,7 +103,7 @@ export const Messages = () => {
     }
 
     return (
-        <div id='chatbox' className='h-full' style={{ border: '2px solid black' }}>
+        <div id='chatbox' className='h-full'>
             <div className='user-name'>
                 <ProfileIcon />
                 <span>{indexName}</span>
@@ -117,8 +117,20 @@ export const Messages = () => {
                 })}
             </div>
             <div className='text-box-container'>
-                <input type="text" name="message" value={msg} id="text-box" className='h-full' onChange={e => setMsg(e.target.value)} />
-                <input type="submit" value="Send" id='send-button' className='h-full' onClick={sendMessage} />
+                <div id="text-box-wrapper" className="message-input">
+                    <div className='text-box'>
+                        <input type="text" placeholder="Type a message" value={msg} onChange={e => setMsg(e.target.value)} />
+                    </div>
+                    <div className="icons">
+                        <i className="icon smile">😊</i>
+                        <i className="icon attach">📎</i>
+                        <i className="icon mic">🎤</i>
+                    </div>
+                </div>
+                <div className='send-button-wrapper'>
+              <button type="submit" id='send-button' onClick={sendMessage} ><FontAwesomeIcon icon={faPaperPlane} /></button>  
+                    {/* <input type="submit" value="<FontAwesomeIcon icon={faPaperPlane} />" id='send-button' className='h-full' onClick={sendMessage} /> */}
+                </div>
             </div>
         </div>
     )

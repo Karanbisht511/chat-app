@@ -1,4 +1,5 @@
-.chatpage-container{
-overflow: hidden;
-background-color: rgb(255, 255, 255);
+.chatpage-container {
+    overflow: hidden;
+    background-color: rgb(255, 255, 255);
+    z-index: 0;
 }

@@ -1,14 +1,11 @@
-/* .chatList{
-    background-color: green;
-} */
-
 .user {
     padding: 5px;
-    color: white;
+    color: black;
     margin: 5px;
-    background-color: rgb(30, 94, 30);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-
 
 .user:hover {
     background-color: rgb(31, 186, 31);
@@ -23,4 +20,32 @@
     border-radius: 50%;
     border: 1px solid black;
     margin: 5px;
+}
+
+.users-wrapper>div:nth-child(odd) {
+    background-color: #007BFF;
+}
+
+.userList-wrapper {
+    border: 1px solid black;
+    width: 20%;
+    height: 60%;
+    position: absolute;
+    top: 37px;
+    left: 10%;
+    overflow-y: scroll;
+    z-index: 2;
+    border-radius: 10px;
+    background-color: green;
+}
+
+.context-menu {
+    border: 1px solid black;
+    position: absolute;
+    border-radius: 10px;
+    background-color: green;
+    font-size: 0.5rem;
+    width: 60px;
+    height: 45px;
+    padding: 2px;
 }

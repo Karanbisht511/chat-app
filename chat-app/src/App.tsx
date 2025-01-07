@@ -1,4 +1,3 @@
-// import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router";
 import Login from './components/Login';
 import Chatpage from "./components/Chatpage";
