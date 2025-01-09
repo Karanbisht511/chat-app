@@ -3,6 +3,7 @@ import loginReducer from "./Authentication/loginSlice";
 import { dashboardReducer, newChatReducer, deleteChatReducer } from './Dashboard/dashboardSlice'
 import { chatHistoryReducer } from "./Messages/messagesSlice";
 import popupContextReducer from './PopupContexts/PopupContext'
+import GroupReducer from './Groups/GroupSlice'
 
 const store = configureStore({
     reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
         chatHistory: chatHistoryReducer,
         addNewChat: newChatReducer,
         deleteChat: deleteChatReducer,
-        contextMenu: popupContextReducer
+        contextMenu: popupContextReducer,
+        groupContext: GroupReducer
     }
 });
 

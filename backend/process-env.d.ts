@@ -5,6 +5,8 @@ declare namespace NodeJS {
     DATABASE_URL: string;
     JWT_SECRET:string;
     MONGO_URI:string;
+    admin:string;
+    adminPass:string;
     // add more environment variables and their types here
   }
 }

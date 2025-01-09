@@ -1,3 +1,4 @@
+import { required } from "joi";
 import { Schema, Document, model } from "mongoose";
 
 interface iUser extends Document {
@@ -5,7 +6,8 @@ interface iUser extends Document {
   passwordHash: string;
   email: string;
   mobile: Number;
-  active: Boolean
+  active: Boolean;
+  groups?: Array<string>;
 }
 
 const userSchema = new Schema({
@@ -13,7 +15,8 @@ const userSchema = new Schema({
   passwordHash: { type: String, required: true },
   email: { type: String, required: true },
   mobile: { type: Number, required: true },
-  active: { type: Boolean, required: true, default: false }
+  active: { type: Boolean, required: true, default: false },
+  groups: { type: Array, required: false }
 });
 
 export const User = model<iUser>("User", userSchema);

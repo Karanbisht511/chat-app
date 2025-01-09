@@ -21,7 +21,7 @@ export const dashboard = createAsyncThunk(
 export const dashboardReducer = createSlice({
     name: 'dashboard',
     initialState: {
-        dashboard: { friendList: [], users: [] },
+        dashboard: { friendList: [], users: [],groups:[] },
         status: 'idle',
         error: '',
     },

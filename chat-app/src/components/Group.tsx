@@ -1,18 +1,19 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import ProfileIcon from './ProfileIcon';
 import { Link } from 'react-router';
 import { useAppDispatch } from '../utils/utils';
-import { deleteChat } from '../stateManagement/Dashboard/dashboardSlice';
 import { toggleChatContext } from '../stateManagement/PopupContexts/PopupContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../stateManagement/store';
+import { toggleRemoveParticpantsPopup } from '../stateManagement/PopupContexts/PopupContext';
+import { removePart } from '../stateManagement/Groups/GroupSlice';
 
 interface Ifriend {
-    userName: string,
+    groupName: string,
     index: number
 }
 
-const Friend: FC<Ifriend> = ({ userName, index }) => {
+const Group: FC<Ifriend> = ({ groupName, index }) => {
 
     const dispatch = useAppDispatch();
 
@@ -26,16 +27,17 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
         dispatch(toggleChatContext(payload));
     }
 
-    useEffect(() => {
-
-    }, [])
+    const handleRemoveParticipant = () => {
+        dispatch(toggleRemoveParticpantsPopup());
+        dispatch(removePart({ groupName }))
+    }
 
     return (
         <div className='user'>
-            <Link to={`/message/${userName}`} state={{ isGroup: false }} key={userName}>
+            <Link to={`/message/${groupName}`} state={{ isGroup: false }} key={groupName}>
                 <div>
                     <ProfileIcon />
-                    <span>{userName}</span>
+                    <span>{groupName}</span>
                 </div>
             </Link>
             <div >
@@ -45,7 +47,7 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
                         (
                             <div className='context-menu'>
                                 <ol>
-                                    <li onClick={() => { dispatch(deleteChat(userName)) }}>Delete chat</li>
+                                    <li onClick={handleRemoveParticipant}>Delete chat</li>
                                     <li >Mute</li>
                                 </ol>
                             </div>
@@ -57,4 +59,4 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
     )
 }
 
-export default Friend
+export default Group

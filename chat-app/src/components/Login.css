@@ -1,0 +1,93 @@
+.loginPage-container {
+    /* background-color: #00AFFF; */
+    background: url('../assets//interface-3614766.svg');
+    /* background: url('../assets/bg-chat.png'); */
+    width: 100vw;
+    height: 100vh;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.login-wrapper {
+    /* border: 1px solid black; */
+    width: 50%;
+    height: 100%;
+    padding: 5%;
+    align-self: center;
+    display: flex;
+}
+
+.login-box {
+    /* border: 1px solid black; */
+    height: 400px;
+    width: 400px;
+    margin: auto;
+    border-radius: 50px;
+    padding: 5%;
+    background-color: white;
+    color: rgb(167, 167, 167);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.login-text {
+    font-size: 2rem;
+}
+
+.text-detail {
+    /* border: 1px solid black; */
+    width: 50%;
+    height: 100%;
+    padding: 5%;
+    align-self: center;
+}
+
+/* .detail {
+    border: 1px solid black;
+} */
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.inputs input {
+    background-color: rgb(234, 234, 234);
+    margin: 5px;
+}
+
+.round-corners {
+    width: 65%;
+    margin: 10px;
+    height: 50px;
+    text-align: center;
+    border-radius: 25px;
+    background-color: rgb(234, 234, 234);
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-signin button {
+    background-color: rgb(52, 52, 176);
+}
+
+.text-header {
+    font-size: 5rem;
+}
+
+@media screen and (min-width: 1300px) {
+
+    .login-box {
+        height: 600px;
+        width: 600px;
+    }
+}

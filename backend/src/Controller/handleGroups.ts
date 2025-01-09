@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Group, iGroups } from "../Model/groups";
+import { User } from "../Model/user";
 
 export const createGroup = async (req: Request, res: Response) => {
     try {
@@ -21,6 +22,12 @@ export const createGroup = async (req: Request, res: Response) => {
         }
         const newGroup = new Group({ admin, groupName, groupParticipants: participants })
         newGroup.save();
+
+        await User.findOneAndUpdate({ username: admin }, { '$push': { groups: groupName } })
+        // associate group to all users
+        participants.map(async (e: string) => {
+            await User.findOneAndUpdate({ username: e }, { '$push': { groups: groupName } })
+        })
 
         res.status(200).json({
             message: 'Group Created Successfully'
@@ -101,6 +108,8 @@ export const addParticipant = async (req: Request, res: Response) => {
 export const removeParticipant = async (req: Request, res: Response) => {
     try {
         const { groupName, participant } = req.body;
+        console.log('groupname: Participant:',groupName,participant);
+        
         if (!groupName || !participant) {
             res.status(400).json({
                 message: 'BadRequest',
@@ -117,6 +126,7 @@ export const removeParticipant = async (req: Request, res: Response) => {
         }
 
         await Group.findOneAndUpdate({ groupName }, { '$pull': { groupParticipants: participant } })
+        await User.findOneAndUpdate({ username: participant }, { '$pull': { groups: groupName } })
         res.status(200).json({
             message: 'Removed Participants Successfully'
         })

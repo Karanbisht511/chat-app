@@ -8,7 +8,7 @@ import { createGroup, deleteGroup, addParticipant, removeParticipant,groupPartic
 router.post("/create", isAuthenticated, createGroup);
 router.delete("/delete", isAuthenticated, deleteGroup);
 router.post("/addParticipant", isAuthenticated, addParticipant);
-router.delete("/removeParticipant", isAuthenticated, removeParticipant);
+router.post("/removeParticipant", isAuthenticated, removeParticipant);
 router.get("/participants", isAuthenticated, groupParticipants);
 
 export default router;

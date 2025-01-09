@@ -6,6 +6,8 @@ import { Friends, friends } from "../Model/friend";
 import { UserMsg } from '../Model/message'
 import { Messages } from "../Model/message";
 import { Message } from "../Model/message";
+import { send } from "../Utils/emailService";
+import { generateResetToken } from "../Utils/JWTFunctions";
 
 
 export const login = async (req: Request, res: Response) => {
@@ -77,14 +79,14 @@ export const signup = async (req: Request, res: Response) => {
         if (err) {
           console.log("error:" + err);
         }
-        const newUser = new User({ username, passwordHash, email, mobile });
+        const newUser = new User({ username, passwordHash, email, mobile, groups: [] });
         newUser.save();
         res.status(200).send("Signup Successfull");
       });
     }
   } catch (error: any) {
     console.log(error.message);
-    res.status(400).send("Some issue occured" + error.message);
+    res.status(500).send("Some issue occured" + error.message);
   }
 };
 
@@ -96,21 +98,94 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
+export const forgotPassword = async (req: Request, res: Response) => {
+
+  try {
+    const { username, email } = req.body;
+    //1-> check Validations
+    if (!username || !email) {
+      res.status(400).json({
+        devMessage: 'Bad Request'
+      });
+      return;
+    }
+
+    // 2->Check the user details in DB
+    const userExist = await User.findOne({ username, email });
+    console.log('userExist:', userExist);
+
+    if (!userExist) {
+      res.status(404).json({ message: 'Not Found' });
+    }
+
+    //if details are fine
+    // 3-> generate a time-bound token and return
+    const { _id } = userExist;
+    const token = generateResetToken({ _id });
+    console.log('token:', token);
+    //4->Send reset mail
+    await send(email, 'reset Password', 'Try reset your password', `<h1>reset your password using this link: link?token=${token}</h1>`)
+    res.status(200).send({ message: 'Reset mail is sent' })
+  } catch (error) {
+    res.status(500).json({
+      "message": `internal server error: ${error}`
+    })
+  }
+}
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+    console.log('username:password:', username, password);
+
+    //1-> check Validations
+    if (!username || !password) {
+      res.status(400).json({
+        devMessage: 'Bad Request'
+      });
+      return;
+    }
+
+    const saltRounds = 10;
+
+    bcrypt.hash(password, saltRounds, async function (err: any, passwordHash: string) {
+      if (err) {
+        console.log("error:" + err);
+      }
+
+      await User.findOneAndUpdate({ username }, { passwordHash: passwordHash })
+      res.status(200).send({ message: "Password reset successfully" });
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      "message": 'internal server error'
+    })
+  }
+}
+
 export const userDashboard = async (req: Request, res: Response) => {
   try {
     const { username } = req.query;
     console.log('username:', username)
     const result: friends = await Friends.findOne({ username: username });
     // console.log('friendList:',result.friendList);
-    console.log('results:',result);
-    
+    console.log('results:', result);
+
+    const groups = await User.findOne({ username }).select('groups');
+    console.log("groups:", groups);
+
     const users = await User.find();
     let activeUser = await User.find({ active: true });
 
     res.status(200).json({
       friendList: result ? result.friendList : [],
       activeUser: activeUser ? activeUser.map((e: any) => e.username) : [],
-      users: users ? users.map((e: any) => e.username) : []
+      users: users ? users.map((e: any) => {
+        if (e.username !== username)
+          return e.username
+      }) : [],
+      groups: groups ? groups.groups : []
     });
   } catch (error) {
     res.status(500).json({
@@ -180,7 +255,7 @@ export const getChats = async (req: Request, res: Response) => {
   try {
     const { username } = req.query;
     const { friend } = req.body;
-console.log('username: ',username);
+    console.log('username: ', username);
 
     if (!username || !friend) {
       res.status(400).json({
@@ -232,7 +307,7 @@ console.log('username: ',username);
       return;
     }
 
-    console.log('messages:',JSON.stringify(messagess));
+    console.log('messages:', JSON.stringify(messagess));
 
 
     res.status(200).json({
