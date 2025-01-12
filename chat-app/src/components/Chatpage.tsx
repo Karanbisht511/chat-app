@@ -16,7 +16,7 @@ function Chatpage() {
   const [friendList, setFriendList] = useState<Array<string>>();
   const [allUsers, setAllusers] = useState<Array<string>>([]);
   const [groups, SetGroups] = useState<Array<string>>([]);
-  const loginDetails = useSelector((state: RootState) => state.login.loginDetails)
+  const loginDetails = useSelector((state: RootState) => state.login.loginState.response)
   console.log("loginDetails:", loginDetails);
   const dashboardDetails = useSelector((state: RootState) => state.dashboard.dashboard)
   const username = sessionStorage.getItem('username')

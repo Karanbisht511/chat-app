@@ -24,7 +24,7 @@ const popupContexts = createSlice({
     reducers: {
         toggleChatContext: (state, action: PayloadAction<{ index: number }>) => {
             state.chatContextArr[action.payload.index] = !state.chatContextArr[action.payload.index]
-            state.chatContextArr.forEach((e, key) => {
+            state.chatContextArr.forEach((_, key) => {
                 if (key !== action.payload.index)
                     state.chatContextArr[key] = false;
             });
@@ -33,7 +33,7 @@ const popupContexts = createSlice({
         },
         toggleGroupContext: (state, action: PayloadAction<{ index: number }>) => {
             state.groupContextArr[action.payload.index] = !state.groupContextArr[action.payload.index]
-            state.chatContextArr.forEach((e, key) => {
+            state.chatContextArr.forEach((_, key) => {
                 if (key !== action.payload.index)
                     state.chatContextArr[key] = false;
             });
@@ -43,7 +43,7 @@ const popupContexts = createSlice({
         toggleNewChat: (state) => {
             state.newChatPopup = !state.newChatPopup;
             state.addGroupMembersPopup = false;
-            state.chatContextArr.forEach((e, index) => {
+            state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
             state.removeParticipantsPopup = false;
@@ -51,7 +51,7 @@ const popupContexts = createSlice({
         toggleAddGroupMember: (state) => {
             state.addGroupMembersPopup = !state.addGroupMembersPopup;
             state.newChatPopup = false;
-            state.chatContextArr.forEach((e, index) => {
+            state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
             state.removeParticipantsPopup = false;
@@ -60,7 +60,7 @@ const popupContexts = createSlice({
             state.createGroupPopup = !state.createGroupPopup;
             state.newChatPopup = false;
             state.addGroupMembersPopup = false;
-            state.chatContextArr.forEach((e, index) => {
+            state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
             state.removeParticipantsPopup = false;
@@ -69,14 +69,14 @@ const popupContexts = createSlice({
             state.removeParticipantsPopup = !state.removeParticipantsPopup
             state.newChatPopup = false;
             state.addGroupMembersPopup = false;
-            state.chatContextArr.forEach((e, index) => {
+            state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
             state.createGroupPopup = false;
         },
         closeAllPopUp: (state) => {
             state.newChatPopup = false;
-            state.chatContextArr.forEach((e, index) => {
+            state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
             state.removeParticipantsPopup = false;
