@@ -1,6 +1,4 @@
-import { Link } from 'react-router';
 import './FriendList.css'
-import ProfileIcon from './ProfileIcon';
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UserList from './UserList';
@@ -31,17 +29,17 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
       {showNewChatPopup && <UserList users={users} />}
       {showAddGroupMemberPopup && <AddGroupMembers users={users} />}
       {showCreateGroupPopup && <CreateGroupPopup />}
+
       <div className='user'><input type="text" name="" id="" placeholder='Search' style={{ border: '2px solid black' }} /></div>
-      <div className='users-wrapper'>
-        {friendList.length > 0 ? friendList.map((e: string, index: number) => {
-          return <Friend userName={e} index={index} key={index} />
-        }) : "No Active Friends"}
-      </div>
+      <div id='friends-list'>
+        <div className='users-wrapper'>
+          {friendList.length > 0 ? friendList.map((e: string, index: number) => {
+            return <Friend userName={e} index={index} key={index} />
+          }) : "No Active Friends"}
+        </div>
 
-      <div>
         <div className='user-name'><h1>Groups</h1></div>
-        <div>
-
+        <div className='group-wrapper'>
           {groups.length > 0 ? groups.map((e: string, index: number) => {
             return <Group groupName={e} index={index} key={index} />
           }) : "No Groups"}

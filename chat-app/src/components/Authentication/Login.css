@@ -18,10 +18,17 @@
     display: flex;
 }
 
+.reset-wrapper {
+    /* border: 1px solid black; */
+    width: 100%;
+    height: 100%;
+    padding: 5%;
+    align-self: center;
+    display: flex;
+}
+
 .login-box {
     /* border: 1px solid black; */
-    height: 400px;
-    width: 400px;
     margin: auto;
     border-radius: 50px;
     padding: 5%;
@@ -89,5 +96,49 @@
     .login-box {
         height: 600px;
         width: 600px;
+    }
+}
+
+@media (min-width:1000px) and (max-width: 1300px) {
+    .text-header {
+        font-size: 3rem;
+    }
+
+    .login-box {
+        height: 500px;
+        width: 500px;
+    }
+}
+
+@media (min-width:800px) and (max-width: 1000px) {
+    .text-header {
+        font-size: 2rem;
+    }
+
+    .login-box {
+        height: 400px;
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 799px) {
+
+    .loginPage-container {
+        display: block;
+    }
+
+    .login-box {
+        width: 100%;
+        height: 600px;
+    }
+
+    .login-wrapper {
+        /* border: 1px solid black; */
+        width: 100%;
+        height: 100%;
+    }
+
+    .text-detail {
+        display: none !important;
     }
 }

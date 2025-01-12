@@ -2,7 +2,7 @@ import { FC } from 'react'
 import ProfileIcon from './ProfileIcon';
 import { Link } from 'react-router';
 import { useAppDispatch } from '../utils/utils';
-import { toggleChatContext } from '../stateManagement/PopupContexts/PopupContext';
+import { toggleGroupContext } from '../stateManagement/PopupContexts/PopupContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '../stateManagement/store';
 import { toggleRemoveParticpantsPopup } from '../stateManagement/PopupContexts/PopupContext';
@@ -17,14 +17,14 @@ const Group: FC<Ifriend> = ({ groupName, index }) => {
 
     const dispatch = useAppDispatch();
 
-    const showContextMenu = useSelector((state: RootState) => state.contextMenu.chatContextArr[index])
+    const showContextMenu = useSelector((state: RootState) => state.contextMenu.groupContextArr[index])
 
     const handleContextState = () => {
 
         const payload = {
             index,
         }
-        dispatch(toggleChatContext(payload));
+        dispatch(toggleGroupContext(payload));
     }
 
     const handleRemoveParticipant = () => {

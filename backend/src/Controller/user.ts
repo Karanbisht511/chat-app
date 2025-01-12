@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 const { generateToken } = require("../Utils/JWTFunctions");
@@ -124,7 +126,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const token = generateResetToken({ _id });
     console.log('token:', token);
     //4->Send reset mail
-    await send(email, 'reset Password', 'Try reset your password', `<h1>reset your password using this link: link?token=${token}</h1>`)
+    const clienturl = process.env.clientURL
+    await send(email, 'reset Password', 'Try reset your password', `<h1>reset your password using this link: ${clienturl}resetPassword/${token}</h1>`)
     res.status(200).send({ message: 'Reset mail is sent' })
   } catch (error) {
     res.status(500).json({

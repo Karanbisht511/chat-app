@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import ProfileIcon from './ProfileIcon';
 import { Link } from 'react-router';
 import { useAppDispatch } from '../utils/utils';
@@ -25,10 +25,6 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
         }
         dispatch(toggleChatContext(payload));
     }
-
-    useEffect(() => {
-
-    }, [])
 
     return (
         <div className='user'>

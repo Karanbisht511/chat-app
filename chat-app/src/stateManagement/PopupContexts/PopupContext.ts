@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface IContext {
     newChatPopup: boolean,
     chatContextArr: Array<boolean>,
+    groupContextArr: Array<boolean>,
     addGroupMembersPopup: boolean,
     createGroupPopup: boolean,
     removeParticipantsPopup: boolean,
@@ -11,6 +12,7 @@ interface IContext {
 const initialState: IContext = {
     newChatPopup: false,
     chatContextArr: [],
+    groupContextArr: [],
     addGroupMembersPopup: false,
     createGroupPopup: false,
     removeParticipantsPopup: false,
@@ -22,6 +24,15 @@ const popupContexts = createSlice({
     reducers: {
         toggleChatContext: (state, action: PayloadAction<{ index: number }>) => {
             state.chatContextArr[action.payload.index] = !state.chatContextArr[action.payload.index]
+            state.chatContextArr.forEach((e, key) => {
+                if (key !== action.payload.index)
+                    state.chatContextArr[key] = false;
+            });
+            state.newChatPopup = false;
+            state.removeParticipantsPopup = false;
+        },
+        toggleGroupContext: (state, action: PayloadAction<{ index: number }>) => {
+            state.groupContextArr[action.payload.index] = !state.groupContextArr[action.payload.index]
             state.chatContextArr.forEach((e, key) => {
                 if (key !== action.payload.index)
                     state.chatContextArr[key] = false;
@@ -75,4 +86,4 @@ const popupContexts = createSlice({
 })
 
 export default popupContexts.reducer;
-export const { toggleChatContext, toggleNewChat, toggleAddGroupMember, toggleCreateGroupPopup, toggleRemoveParticpantsPopup, closeAllPopUp } = popupContexts.actions;
+export const { toggleChatContext, toggleNewChat,toggleGroupContext, toggleAddGroupMember, toggleCreateGroupPopup, toggleRemoveParticpantsPopup, closeAllPopUp } = popupContexts.actions;

@@ -7,6 +7,7 @@ declare namespace NodeJS {
     MONGO_URI:string;
     admin:string;
     adminPass:string;
+    clientURL:string;
     // add more environment variables and their types here
   }
 }

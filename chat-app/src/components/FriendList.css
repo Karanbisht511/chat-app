@@ -53,3 +53,9 @@
     height: 45px;
     padding: 2px;
 }
+
+#friends-list{
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    height: 85%;
+}

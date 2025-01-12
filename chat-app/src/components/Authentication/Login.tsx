@@ -1,16 +1,17 @@
 import { useState, SyntheticEvent } from "react"
-import { useAppDispatch } from "../utils/utils";
-import { loginUser } from "../stateManagement/Authentication/loginSlice";
+import { useAppDispatch } from "../../utils/utils";
+import { loginUser } from "../../stateManagement/Authentication/Authentication";
 import './Login.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router";
+import Tagline from "./Tagline";
 
 function Login() {
     const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
 
     const LoginUser = async (e: SyntheticEvent) => {
         e.preventDefault();
@@ -35,18 +36,16 @@ function Login() {
                         <button className="round-corners" onClick={LoginUser}>Sign in</button>
                     </div>
                     <div>
-                        <button>Forgot your password?</button>
+                        <Link to='/changePassword/forgotPassword'> <button>Forgot your password?</button></Link>
+                    </div>
+                    <div>
+                        <Link to='/signup'> <button>Create Account</button></Link>
                     </div>
                 </div>
             </div>
-            <div className="text-detail">
-                <div className="detail">
-                    <div className="text-header">Messenger</div>
-                    <div className="message-text">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. At sed neque eveniet, iure minima, officia quisquam molestiae molestias quis assumenda eum magnam distinctio incidunt minus. Numquam dignissimos perspiciatis iste nisi?
-                    </div>
-                </div>
-            </div>
+
+            <Tagline />
+
         </div>
     )
 }

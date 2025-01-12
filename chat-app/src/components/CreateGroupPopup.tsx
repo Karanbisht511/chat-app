@@ -8,7 +8,7 @@ import { toggleCreateGroupPopup } from '../stateManagement/PopupContexts/PopupCo
 const CreateGroupPopup = () => {
 
     const dispatch = useAppDispatch();
-    const participants = useSelector((state: RootState) => state.groupContext.parToAdd);
+    const participants = useSelector((state: RootState) => state.groupContext.addPartipants.parToAdd);
     const [groupName, setGroupName] = useState<string>();
 
     const createGroup = () => {

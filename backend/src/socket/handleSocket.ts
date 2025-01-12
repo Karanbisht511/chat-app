@@ -31,7 +31,7 @@ export const runSockets = () => {
                 // console.log("data:", JSON.stringify(data));
                 if (isGroup) {
                     console.log('group chat message');
-                    
+
                     io.to(toSend).emit('--receive message--', { message, from })
                 } else {
                     //    one2one chat
@@ -40,14 +40,14 @@ export const runSockets = () => {
                     console.log("Receiver socket found:", receiverSocket);
                     if (receiverSocket) {
                         console.log(`Emitting to socket: ${receiverSocket}`);
-                        const data={ message, from }
-                        console.log('data:',data);
-                        
+                        const data = { message, from }
+                        console.log('data:', data);
+
                         io.to(receiverSocket).emit("--receive message--", { message, from });
-                        await saveMessageToDB(`${from}to${toSend}`, message, from);
                     } else {
                         console.log(`No active socket found for user: ${toSend}`);
                     }
+                    await saveMessageToDB(`${from}to${toSend}`, message, from);
                 }
 
             });
