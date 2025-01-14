@@ -8,6 +8,7 @@ declare namespace NodeJS {
     admin:string;
     adminPass:string;
     clientURL:string;
+    PORT:number;
     // add more environment variables and their types here
   }
 }

@@ -5,6 +5,8 @@ import cors from 'cors'
 import { runSockets } from './socket/handleSocket';
 import indexRoute from "./Route/indexRoute"
 import { connectMongo } from "./dbConfig"
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
@@ -22,6 +24,6 @@ connectMongo()
 app.use("/api", indexRoute);
 runSockets();
 
-server.listen(9000, () => {
+server.listen(process.env.PORT || 9000, () => {
     console.log('listening on *:9000');
 });
