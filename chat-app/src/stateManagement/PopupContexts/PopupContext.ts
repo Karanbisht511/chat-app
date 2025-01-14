@@ -46,11 +46,15 @@ const popupContexts = createSlice({
             state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
+            state.groupContextArr.forEach((_, index) => {
+                state.groupContextArr[index] = false;
+            });
             state.removeParticipantsPopup = false;
         },
         toggleAddGroupMember: (state) => {
             state.addGroupMembersPopup = !state.addGroupMembersPopup;
             state.newChatPopup = false;
+            state.createGroupPopup = false;
             state.chatContextArr.forEach((_, index) => {
                 state.chatContextArr[index] = false;
             });
@@ -86,4 +90,4 @@ const popupContexts = createSlice({
 })
 
 export default popupContexts.reducer;
-export const { toggleChatContext, toggleNewChat,toggleGroupContext, toggleAddGroupMember, toggleCreateGroupPopup, toggleRemoveParticpantsPopup, closeAllPopUp } = popupContexts.actions;
+export const { toggleChatContext, toggleNewChat, toggleGroupContext, toggleAddGroupMember, toggleCreateGroupPopup, toggleRemoveParticpantsPopup, closeAllPopUp } = popupContexts.actions;

@@ -1,9 +1,12 @@
-import { useAppDispatch } from '../utils/utils'
+import { useAppDispatch } from '../../utils/utils'
 import { useSelector } from 'react-redux'
-import { RootState } from '../stateManagement/store'
-import { addNewGroup } from '../stateManagement/Groups/GroupSlice'
+import { RootState } from '../../stateManagement/store'
+import { addNewGroup } from '../../stateManagement/Groups/GroupSlice'
 import { useState } from 'react'
-import { toggleCreateGroupPopup } from '../stateManagement/PopupContexts/PopupContext'
+import { toggleCreateGroupPopup, toggleAddGroupMember } from '../../stateManagement/PopupContexts/PopupContext'
+import { dashboard } from '../../stateManagement/Dashboard/dashboardSlice'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCamera } from '@fortawesome/free-solid-svg-icons'
 
 const CreateGroupPopup = () => {
 
@@ -16,23 +19,27 @@ const CreateGroupPopup = () => {
 
         if (groupName && Array.isArray(participants)) {
             dispatch(addNewGroup({ groupName, participants }))
+            dispatch(dashboard())
         }
-
         dispatch(toggleCreateGroupPopup());
     }
 
     return (
-        <div className="userList-wrapper">
+        <div id='createGroup' className="userList-wrapper text-sm">
             <div className='flex justify-between'>
-                <div>Back</div>
-                <div>New Group</div>
+                <div><button onClick={() => { dispatch(toggleAddGroupMember()) }}>Back</button> </div>
+                <div>New group</div>
                 <div><button onClick={createGroup}>Create</button></div>
             </div>
-            <div>
-                <input type="text" name="" id="" value={groupName} placeholder='Group Name' onChange={(e) => {
+
+            <div className='flex justify-between items-center group-name'>
+                <div className='camera-icon-wrapper'><FontAwesomeIcon icon={faCamera} /></div>
+                <div>  <input type="text" name="" id="" value={groupName} placeholder='Group name' onChange={(e) => {
                     setGroupName(e.target.value)
                 }} />
+                </div>
             </div>
+
             <div>
                 {
                     Array.isArray(participants) && (

@@ -77,6 +77,9 @@ const groupSlice = createSlice({
         },
         removePart: (state, action: PayloadAction<{ groupName: string }>) => {
             state.removeParticipant.groupName = action.payload.groupName
+        },
+        groupCleanup: (state) => {
+            state.addPartipants.parToAdd = []
         }
     },
     extraReducers: (builder) => {
@@ -136,5 +139,5 @@ const groupSlice = createSlice({
 // });
 
 // export const { removePart } = removePartipantSlice.actions
-export const { addParticipants, removePart } = groupSlice.actions
+export const { addParticipants, removePart,groupCleanup } = groupSlice.actions
 export default groupSlice.reducer

@@ -1,0 +1,74 @@
+.userList-wrapper {
+    border: 1px solid black;
+    width: 20%;
+    height: 60%;
+    position: absolute;
+    top: 37px;
+    left: 10%;
+    overflow-y: scroll;
+    z-index: 2;
+    border-radius: 10px;
+    background-color: #1C1C1C;
+    color: white;
+    padding: 5px 10px;
+    transition: ease;
+}
+
+.search {
+    border: 1px solid #3B3B3B;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 2px 5px;
+    margin: 10px 2px;
+    border-radius: 10px;
+}
+
+.search input {
+    background-color: #1C1C1C;
+    width: 90%;
+    margin-left: 5px;
+}
+
+.contacts-wrapper {
+    border-radius: 15px;
+}
+
+.contact {
+    background-color: #2C2C2C;
+    border-bottom: 1px solid #3D3D3D;
+    padding: 0px 8px 0 0;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+    /* Set the width of the scrollbar */
+    color: #2C2C2C;
+}
+
+.group-name{
+    background-color:#212222;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.group-name input{
+    background-color:#212222;
+}
+
+.camera-icon-wrapper{
+    background-color: #373838;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#createGroup{
+    background-color: #161717;
+}
+
+/* #161717; */

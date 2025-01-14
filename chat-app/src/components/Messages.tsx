@@ -6,7 +6,7 @@ import { RootState } from '../stateManagement/store';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../utils/utils';
 import { chatHistory } from '../stateManagement/Messages/messagesSlice';
-import ProfileIcon from './ProfileIcon';
+import ProfileIcon from './Icons/ProfileIcon';
 import { useLocation } from 'react-router';
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

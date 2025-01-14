@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import ProfileIcon from './ProfileIcon';
+import ProfileIcon from './Icons/ProfileIcon';
 import { Link } from 'react-router';
 import { useAppDispatch } from '../utils/utils';
 import { deleteChat } from '../stateManagement/Dashboard/dashboardSlice';
