@@ -11,6 +11,7 @@ import AddGroupMembers from './PopUps/AddGroupMembers';
 import CreateGroupPopup from './PopUps/CreateGroupPopup';
 import Group from './Group';
 import { groupCleanup } from '../stateManagement/Groups/GroupSlice';
+import Search from './Search';
 
 interface PList {
   friendList: string[];
@@ -46,8 +47,8 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
       {showNewChatPopup && <UserList users={users} />}
       {showAddGroupMemberPopup && <AddGroupMembers users={users} />}
       {showCreateGroupPopup && <CreateGroupPopup />}
-
-      <div className='user'><input type="text" name="" id="" placeholder='Search' style={{ border: '2px solid black' }} /></div>
+      <Search />
+      {/* <div className='user'><input type="text" name="" id="" placeholder='Search' style={{ border: '2px solid black' }} /></div> */}
       <div id='friends-list'>
         <div className='users-wrapper'>
           {friendList.length > 0 ? friendList.map((e: string, index: number) => {

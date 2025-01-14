@@ -56,11 +56,12 @@ function Chatpage() {
     }
   }, [dashboardDetails])
 
+
   return (
-    <div className='chatpage-container flex h-screen' >
+    <div className='chatpage-container h-screen' >
       {removePartPopup && <RemoveParticipants />}
-      <div className='w-1/4' style={{ border: '2px solid black' }}>{friendList && <FriendList friendList={friendList} users={allUsers} groups={groups} />} </div>
-      <div className='w-10/12' style={{ border: '2px solid black' }} ><Outlet /></div>
+      <div className='chatList-wrapper chatList-width' style={{ border: '2px solid black' }}>{friendList && <FriendList friendList={friendList} users={allUsers} groups={groups} />} </div>
+      <div className='chatBox-wrapper chatBox-width' style={{ border: '2px solid black' }} ><Outlet /></div>
     </div>
   )
 }

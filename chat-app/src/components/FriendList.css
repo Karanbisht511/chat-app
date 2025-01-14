@@ -1,10 +1,11 @@
 .chatList{
-    background-color: aqua;
+    background-color: #1C1C1C;
+    color: white;
 }
 
 .user {
     padding: 5px;
-    color: black;
+    /* color: black; */
     margin: 5px;
     display: flex;
     justify-content: space-between;
@@ -12,7 +13,8 @@
 }
 
 .user:hover {
-    background-color: rgb(31, 186, 31);
+    /* background-color: rgb(31, 186, 31); */
+    background-color: #2C2C2C;
 }
 
 .user-icon {
@@ -26,9 +28,9 @@
     margin: 5px;
 }
 
-.users-wrapper>div:nth-child(odd) {
+/* .users-wrapper>div:nth-child(odd) {
     background-color: #007BFF;
-}
+} */
 
 .context-menu {
     border: 1px solid black;

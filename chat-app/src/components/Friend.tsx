@@ -26,9 +26,19 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
         dispatch(toggleChatContext(payload));
     }
 
+    const handleScreenSize = () => {
+        console.log(window.innerHeight);
+        const chatListElement: HTMLElement = document.querySelector('.chatList-wrapper')!;
+        // const chatBoxElement: HTMLElement = document.querySelector('.chatBox-wrapper')!;
+        if (window.innerWidth < 650) {
+            chatListElement.style.display = 'none';
+            // chatBoxElement.style.display = 'block';
+        }
+    }
+
     return (
         <div className='user'>
-            <Link to={`/message/${userName}`} state={{ isGroup: false }} key={userName}>
+            <Link to={`/message/${userName}`} state={{ isGroup: false }} key={userName} onClick={handleScreenSize}>
                 <div>
                     <ProfileIcon />
                     <span>{userName}</span>

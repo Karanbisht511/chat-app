@@ -10,6 +10,8 @@ import ProfileIcon from './Icons/ProfileIcon';
 import { useLocation } from 'react-router';
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { cleanUpChat } from '../stateManagement/Messages/messagesSlice';
+import { faMicrophone, faFaceSmile, faPaperclip, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 export interface IoldMsgs {
     msg: string;
@@ -28,11 +30,16 @@ export const Messages = () => {
     console.log('username:', username);
     const [msg, setMsg] = useState<string>();
     const [oldMsgs, setOldMsgs] = useState<Array<IoldMsgs>>();
+    const [viewSendButton, setViewButton] = useState<boolean>(false);
     const messageHistory = useSelector((state: RootState) => state.chatHistory.messages)
+
+    const chatListElement: HTMLElement = document.querySelector('.chatList-wrapper')!;
+    const chatBoxElement: HTMLElement = document.querySelector('.chatBox-wrapper')!;
 
     useEffect(() => {
         console.log('--hitting the oneOone useEffect--');
         if (indexName) {
+            dispatch(cleanUpChat())
             dispatch(chatHistory({ indexName, isGroup }))
         }
 
@@ -73,6 +80,10 @@ export const Messages = () => {
         console.log('messageHistory', messageHistory);
     }, [messageHistory])
 
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+    }, [])
+
     const sendMessage = (e: SyntheticEvent) => {
         e.preventDefault();
         console.log('triggered sendMEssage function');
@@ -102,9 +113,34 @@ export const Messages = () => {
         setMsg('');
     }
 
+    const handleTextChange = (e) => {
+        setMsg(e.target.value)
+        console.log(msg?.length);
+        if (msg && msg?.length === 1) {
+            setViewButton(false);
+            return
+        }
+        setViewButton(true)
+
+    }
+
+    const handleResize = () => {
+        if (window.innerWidth > 650) {
+            chatListElement.style.display = 'block'
+        }
+    }
+
+    const handleBackButton = () => {
+        if (window.innerWidth < 650) {
+            chatBoxElement.style.display = 'none';
+            chatListElement.style.display = 'block';
+        }
+    }
+
     return (
         <div id='chatbox' className='h-full'>
             <div className='user-name'>
+                <button className='back' onClick={handleBackButton}><FontAwesomeIcon icon={faArrowLeft} /></button>
                 <ProfileIcon />
                 <span>{indexName}</span>
             </div>
@@ -119,17 +155,18 @@ export const Messages = () => {
             <div className='text-box-container'>
                 <div id="text-box-wrapper" className="message-input">
                     <div className='text-box'>
-                        <input type="text" placeholder="Type a message" value={msg} onChange={e => setMsg(e.target.value)} />
+                        <input type="text" placeholder="" value={msg} onChange={handleTextChange} />
                     </div>
-                    <div className="icons">
-                        <i className="icon smile">😊</i>
-                        <i className="icon attach">📎</i>
-                        <i className="icon mic">🎤</i>
+                    <div className="icons flex" style={{ margin: '2px' }} >
+                        <FontAwesomeIcon className='icon' style={{ color: 'white' }} icon={faPaperclip} />
+                        <FontAwesomeIcon className='icon' style={{ color: 'yellow' }} icon={faFaceSmile} />
                     </div>
                 </div>
                 <div className='send-button-wrapper'>
-              <button type="submit" id='send-button' onClick={sendMessage} ><FontAwesomeIcon icon={faPaperPlane} /></button>  
-                    {/* <input type="submit" value="<FontAwesomeIcon icon={faPaperPlane} />" id='send-button' className='h-full' onClick={sendMessage} /> */}
+                    {viewSendButton ?
+                        (<button type="submit" id='send-button' onClick={sendMessage} ><FontAwesomeIcon icon={faPaperPlane} /></button>)
+                        : (<button type="submit" id='send-button' > <FontAwesomeIcon icon={faMicrophone} /></button>)
+                    }
                 </div>
             </div>
         </div>

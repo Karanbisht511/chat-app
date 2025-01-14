@@ -6,6 +6,8 @@ import Search from '../Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import ProfileIcon from '../Icons/ProfileIcon'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../stateManagement/store'
 
 interface IUserList {
     users: string[]
@@ -14,13 +16,14 @@ interface IUserList {
 const AddGroupMembers: FC<IUserList> = ({ users }) => {
 
     const dispatch = useAppDispatch();
+    const members = useSelector((state: RootState) => state.groupContext.addPartipants.parToAdd)
 
     return (
         <div className="userList-wrapper text-sm">
             <div className='flex justify-between items-center'>
                 <div><button onClick={() => { dispatch(toggleNewChat()) }}><FontAwesomeIcon icon={faArrowLeft} /></button></div>
                 <div> Add members</div>
-                <div><button onClick={() => { dispatch(toggleCreateGroupPopup()) }}>Next</button></div>
+                <div><button onClick={() => { if (members.length > 0) dispatch(toggleCreateGroupPopup()) }}>Next</button></div>
             </div>
             <Search />
             <div style={{ margin: '10px', color: '#8A8888' }}><span>Frequently contacted</span></div>

@@ -3,6 +3,7 @@
     /* background-color: rgb(255, 255, 255); */
     z-index: 0;
     position: relative;
+    display: flex;
 }
 
 .popup-removePart {
@@ -28,4 +29,16 @@
     margin: 5px;
     padding: 2px 10px;
     border-radius: 10px;
+}
+
+.chatList-wrapper {
+    background-image: url(../assets/bg-chat2.jpg);
+}
+
+.chatList-width {
+    width: 25%;
+}
+
+.chatBox-width {
+    width: 75%;
 }

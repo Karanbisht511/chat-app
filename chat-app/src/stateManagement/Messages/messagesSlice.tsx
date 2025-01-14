@@ -8,7 +8,7 @@ interface IintialState {
     error: string;
 }
 
-const chatHistoryInitState:IintialState={
+const chatHistoryInitState: IintialState = {
     messages: [],
     status: 'idle',
     error: ''
@@ -62,26 +62,31 @@ export const chatHistory = createAsyncThunk(
         }
     })
 
-    const ChatHistorySlice = createSlice({
-        name: 'chatHistory',
-        initialState: chatHistoryInitState,
-        reducers: {},
-        extraReducers: (builder) => {
-            builder
-                .addCase(chatHistory.pending, (state) => {
-                    state.status = 'loading'
-                })
-                .addCase(chatHistory.fulfilled, (state, action) => {
-                    state.status = 'success';
-                    state.messages = action.payload;
-                })
-                .addCase(chatHistory.rejected, (state, action) => {
-                    state.status = 'failed';
-                    if (action.error.message)
-                        state.error = action.error.message;
-                });
+const chatHistorySlice = createSlice({
+    name: 'chatHistory',
+    initialState: chatHistoryInitState,
+    reducers: {
+        cleanUpChat: (state) => {
+            state.messages = []
         }
-    }).reducer;
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(chatHistory.pending, (state) => {
+                state.status = 'loading'
+            })
+            .addCase(chatHistory.fulfilled, (state, action) => {
+                state.status = 'success';
+                state.messages = action.payload;
+            })
+            .addCase(chatHistory.rejected, (state, action) => {
+                state.status = 'failed';
+                if (action.error.message)
+                    state.error = action.error.message;
+            });
+    }
+});
 
 
-export { ChatHistorySlice as chatHistoryReducer }
+export default chatHistorySlice.reducer;
+export const { cleanUpChat } = chatHistorySlice.actions;
