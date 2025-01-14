@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState, ChangeEvent } from 'react'
 import { useParams } from 'react-router';
 import { socket } from '../socket'
 import "./Chats.css"
@@ -113,7 +113,7 @@ export const Messages = () => {
         setMsg('');
     }
 
-    const handleTextChange = (e) => {
+    const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
         setMsg(e.target.value)
         console.log(msg?.length);
         if (msg && msg?.length === 1) {
