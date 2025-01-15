@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useAppDispatch } from '../../utils/utils'
 import { addNewChat } from '../../stateManagement/Dashboard/dashboardSlice'
-import { toggleAddGroupMember } from '../../stateManagement/PopupContexts/PopupContext'
+import { toggleAddGroupMember, toggleNewChat } from '../../stateManagement/PopupContexts/PopupContext'
 import './popups.css'
 import ProfileIcon from '../Icons/ProfileIcon'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -27,6 +27,7 @@ const UserList: FC<IUserList> = ({ users }) => {
                     if (e !== null)
                         return <div onClick={() => {
                             dispatch(addNewChat(e));
+                            dispatch(toggleNewChat())
                         }}> <div className='contact'>
                                 <ProfileIcon />
                                 <span>{e}</span>

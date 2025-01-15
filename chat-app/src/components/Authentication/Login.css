@@ -1,55 +1,55 @@
 .loginPage-container {
-    /* background-color: #00AFFF; */
-    background: url('../assets//interface-3614766.svg');
-    /* background: url('../assets/bg-chat.png'); */
-    width: 100vw;
-    height: 100vh;
-    color: white;
-    display: flex;
-    align-items: center;
+  /* background-color: #00AFFF; */
+  background: url("../assets//interface-3614766.svg");
+  /* background: url('../assets/bg-chat.png'); */
+  width: 100vw;
+  height: 100vh;
+  color: white;
+  display: flex;
+  align-items: center;
 }
 
 .login-wrapper {
-    /* border: 1px solid black; */
-    width: 50%;
-    height: 100%;
-    padding: 5%;
-    align-self: center;
-    display: flex;
+  /* border: 1px solid black; */
+  width: 50%;
+  height: 100%;
+  padding: 5%;
+  align-self: center;
+  display: flex;
 }
 
 .reset-wrapper {
-    /* border: 1px solid black; */
-    width: 100%;
-    height: 100%;
-    padding: 5%;
-    align-self: center;
-    display: flex;
+  /* border: 1px solid black; */
+  width: 100%;
+  height: 100%;
+  padding: 5%;
+  align-self: center;
+  display: flex;
 }
 
 .login-box {
-    /* border: 1px solid black; */
-    margin: auto;
-    border-radius: 50px;
-    padding: 5%;
-    background-color: white;
-    color: rgb(167, 167, 167);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+  /* border: 1px solid black; */
+  margin: auto;
+  border-radius: 50px;
+  padding: 5%;
+  background-color: white;
+  color: rgb(167, 167, 167);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .login-text {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .text-detail {
-    /* border: 1px solid black; */
-    width: 50%;
-    height: 100%;
-    padding: 5%;
-    align-self: center;
+  /* border: 1px solid black; */
+  width: 50%;
+  height: 100%;
+  padding: 5%;
+  align-self: center;
 }
 
 /* .detail {
@@ -57,88 +57,86 @@
 } */
 
 .inputs {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .inputs input {
-    background-color: rgb(234, 234, 234);
-    margin: 5px;
+  background-color: rgb(234, 234, 234);
+  margin: 5px;
 }
 
 .round-corners {
-    width: 65%;
-    margin: 10px;
-    height: 50px;
-    text-align: center;
-    border-radius: 25px;
-    background-color: rgb(234, 234, 234);
+  width: 65%;
+  margin: 10px;
+  height: 50px;
+  text-align: center;
+  border-radius: 25px;
+  background-color: rgb(234, 234, 234);
 }
 
 .input-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button-signin button {
-    background-color: rgb(52, 52, 176);
+  background-color: rgb(52, 52, 176);
 }
 
 .text-header {
-    font-size: 5rem;
+  font-size: 5rem;
 }
 
 @media screen and (min-width: 1300px) {
-
-    .login-box {
-        height: 600px;
-        width: 600px;
-    }
+  .login-box {
+    height: 600px;
+    width: 600px;
+  }
 }
 
-@media (min-width:1000px) and (max-width: 1300px) {
-    .text-header {
-        font-size: 3rem;
-    }
+@media (min-width: 1000px) and (max-width: 1300px) {
+  .text-header {
+    font-size: 3rem;
+  }
 
-    .login-box {
-        height: 500px;
-        width: 500px;
-    }
+  .login-box {
+    height: 500px;
+    width: 500px;
+  }
 }
 
-@media (min-width:800px) and (max-width: 1000px) {
-    .text-header {
-        font-size: 2rem;
-    }
+@media (min-width: 800px) and (max-width: 1000px) {
+  .text-header {
+    font-size: 2rem;
+  }
 
-    .login-box {
-        height: 400px;
-        width: 400px;
-    }
+  .login-box {
+    height: 400px;
+    width: 400px;
+  }
 }
 
 @media screen and (max-width: 799px) {
+  .loginPage-container {
+    display: block;
+  }
 
-    .loginPage-container {
-        display: block;
-    }
+  .login-box {
+    width: 100%;
+    height: 600px;
+  }
 
-    .login-box {
-        width: 100%;
-        height: 600px;
-    }
+  .login-wrapper {
+    /* border: 1px solid black; */
+    width: 100%;
+    height: 100%;
+  }
 
-    .login-wrapper {
-        /* border: 1px solid black; */
-        width: 100%;
-        height: 100%;
-    }
-
-    .text-detail {
-        display: none !important;
-    }
+  .text-detail {
+    display: none !important;
+  }
 }

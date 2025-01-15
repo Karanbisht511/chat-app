@@ -83,74 +83,68 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-export const signup = createAsyncThunk(
-  "signup",
-  async (payload: Isignup) => {
-    const response = await api.post("/signup", payload);
-    return response.data;
-  }
-);
+export const signup = createAsyncThunk("signup", async (payload: Isignup) => {
+  const response = await api.post("/signup", payload);
+  return response.data;
+});
 
 const loginSlice = createSlice({
-    name: 'login',
-    initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(loginUser.pending, (state) => {
-                state.loginState.status = 'loading'
-            })
-            .addCase(loginUser.fulfilled, (state, action) => {
-                state.loginState.status = 'success';
-                state.loginState.response = action.payload;
-            })
-            .addCase(loginUser.rejected, (state, action) => {
-                state.loginState.status = 'failed';
-                if (action.error.message)
-                    state.loginState.error = action.error.message;
-            })
-            .addCase(forgotPassword.pending, (state) => {
-                state.forgotPasswordState.status = 'loading'
-            })
-            .addCase(forgotPassword.fulfilled, (state, action) => {
-                state.forgotPasswordState.status = 'success';
-                state.forgotPasswordState.response = action.payload;
-            })
-            .addCase(forgotPassword.rejected, (state, action) => {
-                state.forgotPasswordState.status = 'failed';
-                if (action.error.message)
-                    state.forgotPasswordState.error = action.error.message;
-            })
-            .addCase(resetPassword.pending, (state) => {
-                state.resetPasswordState.status = 'loading'
-            })
-            .addCase(resetPassword.fulfilled, (state, action) => {
-                state.resetPasswordState.status = 'success';
-                state.resetPasswordState.response = action.payload;
-            })
-            .addCase(resetPassword.rejected, (state, action) => {
-                state.resetPasswordState.status = 'failed';
-                if (action.error.message)
-                    state.resetPasswordState.error = action.error.message;
-            })
-            .addCase(signup.pending, (state) => {
-                state.signupState.status = 'loading'
-            })
-            .addCase(signup.fulfilled, (state, action) => {
-                state.signupState.status = 'success';
-                state.signupState.response = action.payload;
-            })
-            .addCase(signup.rejected, (state, action) => {
-                state.signupState.status = 'failed';
-                if (action.error.message)
-                    state.signupState.error = action.error.message;
-            });
-    }
+  name: "login",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loginState.status = "loading";
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loginState.status = "success";
+        state.loginState.response = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loginState.status = "failed";
+        if (action.error.message) state.loginState.error = action.error.message;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.forgotPasswordState.status = "loading";
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.forgotPasswordState.status = "success";
+        state.forgotPasswordState.response = action.payload;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.forgotPasswordState.status = "failed";
+        if (action.error.message)
+          state.forgotPasswordState.error = action.error.message;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.resetPasswordState.status = "loading";
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.resetPasswordState.status = "success";
+        state.resetPasswordState.response = action.payload;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.resetPasswordState.status = "failed";
+        if (action.error.message)
+          state.resetPasswordState.error = action.error.message;
+      })
+      .addCase(signup.pending, (state) => {
+        state.signupState.status = "loading";
+      })
+      .addCase(signup.fulfilled, (state, action) => {
+        state.signupState.status = "success";
+        state.signupState.response = action.payload;
+      })
+      .addCase(signup.rejected, (state, action) => {
+        state.signupState.status = "failed";
+        if (action.error.message)
+          state.signupState.error = action.error.message;
+      });
+  },
 });
 
 export default loginSlice.reducer;
-
-
 
 // import axios from "axios";
 // import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";

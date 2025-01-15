@@ -1,44 +1,44 @@
 .chatpage-container {
-    overflow: hidden;
-    /* background-color: rgb(255, 255, 255); */
-    z-index: 0;
-    position: relative;
-    display: flex;
+  overflow: hidden;
+  /* background-color: rgb(255, 255, 255); */
+  z-index: 0;
+  position: relative;
+  display: flex;
 }
 
 .popup-removePart {
-    /* border: 1px solid black; */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    height: 100px;
-    background-color: rgb(127, 127, 186);
-    color: white;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    border-radius: 25px;
-    text-align: center;
+  /* border: 1px solid black; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 100px;
+  background-color: rgb(127, 127, 186);
+  color: white;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border-radius: 25px;
+  text-align: center;
 }
 
 .popup-removePart button {
-    background-color: blueviolet;
-    margin: 5px;
-    padding: 2px 10px;
-    border-radius: 10px;
+  background-color: blueviolet;
+  margin: 5px;
+  padding: 2px 10px;
+  border-radius: 10px;
 }
 
 .chatList-wrapper {
-    background-image: url(../assets/bg-chat2.jpg);
+  background-image: url(../assets/bg-chat2.jpg);
 }
 
 .chatList-width {
-    width: 25%;
+  width: 25%;
 }
 
 .chatBox-width {
-    width: 75%;
+  width: 75%;
 }

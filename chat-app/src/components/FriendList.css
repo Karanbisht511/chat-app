@@ -1,50 +1,48 @@
-.chatList{
-    background-color: #1C1C1C;
-    color: white;
+.chatList {
+  background-color: #1c1c1c;
+  color: white;
 }
 
 .user {
-    padding: 5px;
-    /* color: black; */
-    margin: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .user:hover {
-    /* background-color: rgb(31, 186, 31); */
-    background-color: #2C2C2C;
+  background-color: #2c2c2c;
 }
 
 .user-icon {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid black;
-    margin: 5px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid black;
+  margin: 5px;
 }
-
-/* .users-wrapper>div:nth-child(odd) {
-    background-color: #007BFF;
-} */
 
 .context-menu {
-    border: 1px solid black;
-    position: absolute;
-    border-radius: 10px;
-    background-color: green;
-    font-size: 0.5rem;
-    width: 60px;
-    height: 45px;
-    padding: 2px;
+  border: 1px solid black;
+  position: absolute;
+  border-radius: 5px;
+  background-color: green;
+  font-size: 0.5rem;
+  padding: 5px;
 }
 
-#friends-list{
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    height: 85%;
+#friends-list {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  height: 85%;
+}
+
+@media screen and (max-width: 650px) {
+  .context-menu {
+    right: 20px;
+  }
 }
