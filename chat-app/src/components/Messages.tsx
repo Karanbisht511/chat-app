@@ -19,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import EmojiPicker, { Theme, EmojiClickData } from "emoji-picker-react";
 import { toggleEmotePopup } from "../stateManagement/PopupContexts/PopupContext";
+import axios from "axios";
 
 export interface IoldMsgs {
   msg: string;
@@ -94,7 +95,34 @@ export const Messages = () => {
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
+    const fileSelector: HTMLInputElement =
+      document.querySelector(".input-file")!;
+    fileSelector?.addEventListener("change", () => {
+      console.log("file detected");
+
+      const file: File = fileSelector.files! && fileSelector.files[0]!;
+      if (file) {
+        console.log("file:", file);
+        uploadFile(file);
+      }
+    })!;
   }, []);
+
+  const uploadFile = async (file: File) => {
+    console.log('uploadFile->file:',file);
+    const formData = new FormData();
+    formData.append("file", file);
+    const result = await axios.post(
+      "http://localhost:9000/api/messages/uploadFile",
+      { formData },
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
+        },
+      }
+    );
+    console.log("upload result:", result);
+  };
 
   const sendMessage = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -136,7 +164,7 @@ export const Messages = () => {
     setMsg(e.target.value);
     console.log(msg?.length);
     console.log(e.target.value);
-    
+
     toggleViewButton();
   };
 
@@ -162,6 +190,17 @@ export const Messages = () => {
       }
     });
     toggleViewButton();
+  };
+
+  const handleAttachment = () => {
+    console.log("handleAttachment");
+    const fileSelector: HTMLInputElement =
+      document.querySelector(".input-file")!;
+    // const reader = new FileReader();
+    fileSelector.click();
+    // fileSelector.dispatchEvent(reader());
+
+    console.log("next to file detected");
   };
 
   return (
@@ -222,7 +261,12 @@ export const Messages = () => {
           </div>
           <div className="icons flex" style={{ margin: "2px" }}>
             <span className="icon">
-              <FontAwesomeIcon style={{ color: "white" }} icon={faPaperclip} />
+              <input type="file" className="input-file" />
+              <FontAwesomeIcon
+                style={{ color: "white" }}
+                icon={faPaperclip}
+                onClick={handleAttachment}
+              />
             </span>
             <span className="icon">
               <FontAwesomeIcon
