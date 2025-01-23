@@ -14,38 +14,6 @@ const chatHistoryInitState: IintialState = {
   error: "",
 };
 
-export const groupChatHistory = createAsyncThunk(
-  "groupChatHistory",
-  async (groupName: string) => {
-    const res = await axios.get(
-      `http://localhost:9000/api/users/getGroupChats?index=${groupName}`,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
-        },
-      }
-    );
-    return res.data.messages;
-  }
-);
-
-export const singleChatHistory = createAsyncThunk(
-  "singleChatHistory",
-  async (indexName: string) => {
-    const username = sessionStorage.getItem("username");
-    const res = await axios.post(
-      `http://localhost:9000/api/users/getChats?username=${username}`,
-      { friend: indexName },
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
-        },
-      }
-    );
-    return res.data.messages;
-  }
-);
-
 export const chatHistory = createAsyncThunk(
   "chatHistory",
   async (input: { indexName: string; isGroup: boolean }) => {

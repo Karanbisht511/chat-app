@@ -1,0 +1,24 @@
+version: "1.0"
+
+services:
+  frontend:
+    build:
+      context: ./chat-app
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - MONGO_URI=mongodb+srv://karan:SdBVkELebhFqXdv8@cluster0.tn1fx.mongodb.net/chat-base?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=12sdfaf421
+      - admin=ac4bfspmp@gmail.com
+      - adminPass='hhkv rlkv gqur xwql'
+      - clientURL='http://localhost:5173/'

@@ -20,14 +20,14 @@ interface Isignup extends IForgotPass {
   mobile: string;
 }
 
-interface IResponseState<T> {
+export interface IResponseState<T> {
   response: T;
   status: "idle" | "loading" | "success" | "failed";
   error: string | null;
 }
 
 // Initial States
-const createResponseState = <T>(initialData: T): IResponseState<T> => ({
+export const createResponseState = <T>(initialData: T): IResponseState<T> => ({
   response: initialData,
   status: "idle",
   error: null,

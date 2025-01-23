@@ -17,9 +17,15 @@ import {
   faPaperclip,
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import EmojiPicker, { Theme, EmojiClickData } from "emoji-picker-react";
+import  {  EmojiClickData } from "emoji-picker-react";
 import { toggleEmotePopup } from "../stateManagement/PopupContexts/PopupContext";
-import axios from "axios";
+import {
+  fileDownload,
+  fileUpload,
+  cleanUpFileState,
+} from "../stateManagement/Messages/file";
+import { MessageLeft, MessageRight } from "./Message";
+import Emojis from "./PopUps/Emojis";
 
 export interface IoldMsgs {
   msg: string;
@@ -39,11 +45,21 @@ export const Messages = () => {
   const [msg, setMsg] = useState<string>("");
   const [oldMsgs, setOldMsgs] = useState<Array<IoldMsgs>>();
   const [viewSendButton, setViewButton] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<File>();
+
   const messageHistory = useSelector(
     (state: RootState) => state.chatHistory.messages
   );
   const showEmotePicker = useSelector(
     (state: RootState) => state.contextMenu.emojiBoxPopup
+  );
+
+  const fileStatus = useSelector(
+    (state: RootState) => state.fileContext.uploadState.response
+  );
+
+  const downloadedFile = useSelector(
+    (state: RootState) => state.fileContext.downloadState.response
   );
 
   const chatListElement: HTMLElement =
@@ -84,7 +100,42 @@ export const Messages = () => {
       if (messagesContainer)
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
-  }, [dispatch, indexName]);
+
+    console.log("fileStatus:", fileStatus);
+
+    if (fileStatus === "File saved successfully") {
+      console.log("File saved successfully");
+
+      let newDiv = document.createElement("div");
+      newDiv.classList.add("message");
+      newDiv.classList.add("right");
+      let newSpan = document.createElement("span");
+      newSpan.classList.add("text-content");
+      newSpan.style["borderRadius"] = "10px 10px 0px 10px";
+      if (selectedFile?.name) newSpan.textContent = selectedFile.name;
+
+      newSpan.addEventListener("click", () => {
+        console.log("clicked");
+        try {
+          const input = { filename: selectedFile?.name! };
+          dispatch(fileDownload(input));
+          console.log("downloadedFile->url:", downloadedFile);
+        } catch (error) {
+          console.error("Error during fileDownload dispatch:", error);
+        }
+      });
+
+      newDiv.appendChild(newSpan);
+
+      const messagesContainer = document.getElementById("messages");
+      messagesContainer?.appendChild(newDiv);
+      if (messagesContainer)
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      setMsg("");
+      dispatch(cleanUpFileState());
+    }
+  }, [dispatch, indexName, fileStatus]);
 
   useEffect(() => {
     if (messageHistory) {
@@ -103,26 +154,20 @@ export const Messages = () => {
       const file: File = fileSelector.files! && fileSelector.files[0]!;
       if (file) {
         console.log("file:", file);
-        uploadFile(file);
+        setSelectedFile(file);
+        const input = {
+          file: file,
+          message: msg,
+          from: username!,
+          toSend: indexName!,
+          fileName: file.name,
+        };
+        console.log("file upload Input:", input);
+
+        dispatch(fileUpload(input));
       }
     })!;
-  }, []);
-
-  const uploadFile = async (file: File) => {
-    console.log('uploadFile->file:',file);
-    const formData = new FormData();
-    formData.append("file", file);
-    const result = await axios.post(
-      "http://localhost:9000/api/messages/uploadFile",
-      { formData },
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
-        },
-      }
-    );
-    console.log("upload result:", result);
-  };
+  }, [dispatch]);
 
   const sendMessage = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -196,10 +241,8 @@ export const Messages = () => {
     console.log("handleAttachment");
     const fileSelector: HTMLInputElement =
       document.querySelector(".input-file")!;
-    // const reader = new FileReader();
-    fileSelector.click();
-    // fileSelector.dispatchEvent(reader());
 
+    fileSelector.click();
     console.log("next to file detected");
   };
 
@@ -216,39 +259,12 @@ export const Messages = () => {
         {oldMsgs !== undefined &&
           oldMsgs?.map((e, index) => {
             if (e.msgBy === username) {
-              return (
-                <div className="message right" key={index}>
-                  <span
-                    className="text-content"
-                    style={{ borderRadius: "10px 10px 0px 10px" }}
-                  >
-                    {e.msg}
-                  </span>
-                </div>
-              );
+              return <MessageRight msg={e.msg} key={index} />;
             }
-            return (
-              <div className="message left" key={index}>
-                <span
-                  className="text-content"
-                  style={{ borderRadius: "10px 10px 10px 0px" }}
-                >
-                  {e.msg}
-                </span>
-              </div>
-            );
+            return <MessageLeft msg={e.msg} key={index} />;
           })}
       </div>
-      {showEmotePicker && (
-        <div className="emojis">
-          <EmojiPicker
-            height="100%"
-            width="100%"
-            theme={Theme.DARK}
-            onEmojiClick={handleEmoteClick}
-          />
-        </div>
-      )}
+      {showEmotePicker && <Emojis handleEmoteClick={handleEmoteClick} />}
       <div className="text-box-container">
         <div id="text-box-wrapper" className="message-input">
           <div className="text-box">

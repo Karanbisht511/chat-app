@@ -8,6 +8,7 @@ import {
 import chatHistoryReducer from "./Messages/messagesSlice";
 import popupContextReducer from "./PopupContexts/PopupContext";
 import GroupReducer from "./Groups/GroupSlice";
+import fileReducer from "./Messages/file";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     deleteChat: deleteChatReducer,
     contextMenu: popupContextReducer,
     groupContext: GroupReducer,
+    fileContext: fileReducer,
   },
 });
 

@@ -39,7 +39,7 @@ export const uploadFile = async (
       fileType,
     });
 
-    res.status(200).json({ message: `File saved as ${req.file.filename}` });
+    res.status(200).json({ message: `File saved successfully` });
   } catch (error) {
     res.status(500).json({
       message: "internal server error",
