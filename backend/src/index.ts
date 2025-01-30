@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import http from "http";
 import cors from "cors";
-import { runSockets } from "./socket/handleSocket";
+// import ioHandler from "./socket/handleSocket";
 import indexRoute from "./Route/indexRoute";
 import { connectMongo } from "./dbConfig";
 import dotenv from "dotenv";
@@ -20,10 +20,9 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api", indexRoute);
-runSockets();
 
 // Only start the server in development
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   server.listen(process.env.PORT || 9000, () => {
     console.log("listening on *:9000");
   });

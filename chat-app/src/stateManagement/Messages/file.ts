@@ -1,4 +1,4 @@
-import axios from "axios";
+import { api } from "../api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { createResponseState } from "../Authentication/Authentication";
 
@@ -25,8 +25,8 @@ export const fileUpload = createAsyncThunk(
     formData.append("from", input.from);
     formData.append("toSend", input.toSend);
 
-    const result = await axios.post(
-      "http://localhost:9000/api/messages/uploadFile",
+    const result = await api.post(
+      "/messages/uploadFile",
       formData,
       {
         headers: {
@@ -41,8 +41,8 @@ export const fileUpload = createAsyncThunk(
 export const fileDownload = createAsyncThunk(
   "fileDownload",
   async (input: { filename: string }) => {
-    const result = await axios.get(
-      `http://localhost:9000/api/messages/download/${input.filename}`,
+    const result = await api.get(
+      `/messages/download/${input.filename}`,
       {
         responseType: "blob",
         headers: {

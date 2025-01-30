@@ -1,12 +1,12 @@
-import axios from "axios";
+import { api } from "../api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const dashboard = createAsyncThunk("dashboard", async () => {
   const username = sessionStorage.getItem("username");
   console.log("dashboardSlice->username:", username);
 
-  const res = await axios.get(
-    `http://localhost:9000/api/users/dashboard?username=${username}`,
+  const res = await api.get(
+    `/users/dashboard?username=${username}`,
     {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
@@ -45,8 +45,8 @@ export const addNewChat = createAsyncThunk(
   "newChat",
   async (friend: string) => {
     const username = sessionStorage.getItem("username");
-    const res = await axios.post(
-      `http://localhost:9000/api/friends/addFriend?username=${username}`,
+    const res = await api.post(
+      `/friends/addFriend?username=${username}`,
       {
         frToAdd: friend,
       },
@@ -87,8 +87,8 @@ export const deleteChat = createAsyncThunk(
   "newChat",
   async (friend: string) => {
     const username = sessionStorage.getItem("username");
-    const res = await axios.post(
-      `http://localhost:9000/api/friends/deleteFriend?username=${username}`,
+    const res = await api.post(
+      `/api/friends/deleteFriend?username=${username}`,
       {
         frToDelete: friend,
       },

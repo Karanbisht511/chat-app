@@ -1,5 +1,5 @@
-import axios from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { api } from "../api";
 
 // Common Interfaces
 interface Icredentials {
@@ -49,13 +49,10 @@ const initialState = {
   signupState: createResponseState({ message: "" }),
 };
 
-// Async Thunks
-const api = axios.create({ baseURL: "http://localhost:9000/api/users" });
-
 export const loginUser = createAsyncThunk(
   "login",
   async (payload: Icredentials) => {
-    const response = await api.post("/login", payload);
+    const response = await api.post("/users/login", payload);
     sessionStorage.setItem("JWTToken", response.data.token);
     sessionStorage.setItem("username", response.data.username);
     return response.data;
@@ -65,7 +62,7 @@ export const loginUser = createAsyncThunk(
 export const forgotPassword = createAsyncThunk(
   "forgotPassword",
   async (payload: IForgotPass) => {
-    const response = await api.post("/forgotPassword", payload);
+    const response = await api.post("/users/forgotPassword", payload);
     return response.data;
   }
 );
@@ -84,7 +81,7 @@ export const resetPassword = createAsyncThunk(
 );
 
 export const signup = createAsyncThunk("signup", async (payload: Isignup) => {
-  const response = await api.post("/signup", payload);
+  const response = await api.post("/users/signup", payload);
   return response.data;
 });
 

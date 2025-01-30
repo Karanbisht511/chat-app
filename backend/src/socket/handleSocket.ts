@@ -3,10 +3,24 @@ import { server } from "../index";
 import { User } from "../Model/user";
 import { UserMsg } from "../Model/message";
 import { saveMessageToDB } from "../DB/messages";
+import { Request, Response } from "express";
 
-export const runSockets = () => {
+const ioHandler = (req: Request, res: Response) => {
+  const socket = res.socket as any;
+
+  if (!socket.server.io) {
+    runSockets(res);
+  }
+  res.end();
+};
+
+export default ioHandler;
+
+const runSockets = (res: Response) => {
   try {
     const io = new Server(server, {
+      path: "/api/socketio",
+      addTrailingSlash: false,
       cors: {
         origin: "*", // Allow all origins (use '*' for open access or specify specific origins)
         methods: ["GET", "POST"], // Allow only these HTTP methods
@@ -14,7 +28,8 @@ export const runSockets = () => {
         credentials: true, // Allow credentials (cookies, authorization headers)
       },
     });
-
+    const socket = res.socket as any;
+    socket.server.io = io;
     let liveUsers = new Map<string, string>();
     let currentUser: string;
     io.on("connection", async (socket) => {

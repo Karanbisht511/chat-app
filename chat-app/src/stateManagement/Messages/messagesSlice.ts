@@ -1,4 +1,4 @@
-import axios from "axios";
+import { api } from "../api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IoldMsgs } from "../../components/Messages";
 
@@ -18,8 +18,8 @@ export const chatHistory = createAsyncThunk(
   "chatHistory",
   async (input: { indexName: string; isGroup: boolean }) => {
     if (input.isGroup) {
-      const res = await axios.get(
-        `http://localhost:9000/api/users/getGroupChats?index=${input.indexName}`,
+      const res = await api.get(
+        `/users/getGroupChats?index=${input.indexName}`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
@@ -29,8 +29,8 @@ export const chatHistory = createAsyncThunk(
       return res.data.messages;
     } else {
       const username = sessionStorage.getItem("username");
-      const res = await axios.post(
-        `http://localhost:9000/api/users/getChats?username=${username}`,
+      const res = await api.post(
+        `/users/getChats?username=${username}`,
         { friend: input.indexName },
         {
           headers: {

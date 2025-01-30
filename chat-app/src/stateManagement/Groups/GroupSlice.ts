@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import { api } from "../api";
 
 interface IGroup {
   addPartipants: {
@@ -36,8 +36,8 @@ export const addNewGroup = createAsyncThunk(
   async (payload: { groupName: string; participants: string[] }) => {
     const { groupName, participants } = payload;
 
-    const res = await axios.post(
-      `http://localhost:9000/api/group/create`,
+    const res = await api.post(
+      `/group/create`,
       {
         admin: sessionStorage.getItem("username"),
         groupName,
@@ -60,8 +60,8 @@ export const removeParticipant = createAsyncThunk(
       groupName: input.groupName,
       participant: sessionStorage.getItem("username"),
     };
-    const res = await axios.post(
-      `http://localhost:9000/api/group/removeParticipant`,
+    const res = await api.post(
+      `/group/removeParticipant`,
       payload,
       {
         headers: {
