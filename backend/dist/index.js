@@ -24,8 +24,11 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 exports.server = http_1.default.createServer(app);
 (0, dbConfig_1.connectMongo)();
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "Hello world" });
+});
 app.use("/api", indexRoute_1.default);
 (0, handleSocket_1.runSockets)();
 exports.server.listen(process.env.PORT || 9000, () => {
-    console.log('listening on *:9000');
+    console.log("listening on *:9000");
 });

@@ -27,7 +27,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("login");
         const { username, password } = req.body;
-        console.log('username:', username);
+        console.log("username:", username);
         const result = yield user_1.User.findOne({ username });
         if (!result) {
             res.status(400).json({ message: "Invalid User Credentials!" });
@@ -79,7 +79,7 @@ exports.login = login;
 const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(req.body);
-        console.log('signup');
+        console.log("signup");
         const { username, password, email, mobile } = req.body;
         const saltRounds = 10;
         const existingUser = yield user_1.User.findOne({ email });
@@ -92,7 +92,13 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 if (err) {
                     console.log("error:" + err);
                 }
-                const newUser = new user_1.User({ username, passwordHash, email, mobile, groups: [] });
+                const newUser = new user_1.User({
+                    username,
+                    passwordHash,
+                    email,
+                    mobile,
+                    groups: [],
+                });
                 newUser.save();
                 res.status(200).send("Signup Successfull");
             });
@@ -119,29 +125,29 @@ const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         //1-> check Validations
         if (!username || !email) {
             res.status(400).json({
-                devMessage: 'Bad Request'
+                devMessage: "Bad Request",
             });
             return;
         }
         // 2->Check the user details in DB
         const userExist = yield user_1.User.findOne({ username, email });
-        console.log('userExist:', userExist);
+        console.log("userExist:", userExist);
         if (!userExist) {
-            res.status(404).json({ message: 'Not Found' });
+            res.status(404).json({ message: "Not Found" });
         }
         //if details are fine
         // 3-> generate a time-bound token and return
         const { _id } = userExist;
         const token = (0, JWTFunctions_1.generateResetToken)({ _id });
-        console.log('token:', token);
+        console.log("token:", token);
         //4->Send reset mail
         const clienturl = process.env.clientURL;
-        yield (0, emailService_1.send)(email, 'reset Password', 'Try reset your password', `<h1>reset your password using this link: ${clienturl}resetPassword/${token}</h1>`);
-        res.status(200).send({ message: 'Reset mail is sent' });
+        yield (0, emailService_1.send)(email, "reset Password", "Try reset your password", `<h1>reset your password using this link: ${clienturl}resetPassword/${token}</h1>`);
+        res.status(200).send({ message: "Reset mail is sent" });
     }
     catch (error) {
         res.status(500).json({
-            "message": `internal server error: ${error}`
+            message: `internal server error: ${error}`,
         });
     }
 });
@@ -149,11 +155,11 @@ exports.forgotPassword = forgotPassword;
 const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
-        console.log('username:password:', username, password);
+        console.log("username:password:", username, password);
         //1-> check Validations
         if (!username || !password) {
             res.status(400).json({
-                devMessage: 'Bad Request'
+                devMessage: "Bad Request",
             });
             return;
         }
@@ -170,7 +176,7 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     catch (error) {
         res.status(500).json({
-            "message": 'internal server error'
+            message: "internal server error",
         });
     }
 });
@@ -178,27 +184,29 @@ exports.resetPassword = resetPassword;
 const userDashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username } = req.query;
-        console.log('username:', username);
+        console.log("username:", username);
         const result = yield friend_1.Friends.findOne({ username: username });
         // console.log('friendList:',result.friendList);
-        console.log('results:', result);
-        const groups = yield user_1.User.findOne({ username }).select('groups');
+        console.log("results:", result);
+        const groups = yield user_1.User.findOne({ username }).select("groups");
         console.log("groups:", groups);
         const users = yield user_1.User.find();
         let activeUser = yield user_1.User.find({ active: true });
         res.status(200).json({
             friendList: result ? result.friendList : [],
             activeUser: activeUser ? activeUser.map((e) => e.username) : [],
-            users: users ? users.map((e) => {
-                if (e.username !== username)
-                    return e.username;
-            }) : [],
-            groups: groups ? groups.groups : []
+            users: users
+                ? users.map((e) => {
+                    if (e.username !== username)
+                        return e.username;
+                })
+                : [],
+            groups: groups ? groups.groups : [],
         });
     }
     catch (error) {
         res.status(500).json({
-            message: `${error}`
+            message: `${error}`,
         });
     }
 });
@@ -209,16 +217,16 @@ const pushUnreadMsgs = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const unreadMsgs = yield message_1.UserMsg.findOne({ username });
         if (unreadMsgs.nonDelMsg.length < 0) {
             res.status(404).json({
-                devMessage: 'No-unread messages'
+                devMessage: "No-unread messages",
             });
         }
         res.status(200).json({
-            messages: unreadMsgs.nonDelMsg
+            messages: unreadMsgs.nonDelMsg,
         });
     }
     catch (error) {
         res.status(500).json({
-            message: `${error}`
+            message: `${error}`,
         });
     }
 });
@@ -230,29 +238,31 @@ const placeUnreadMsgs = (req, res) => __awaiter(void 0, void 0, void 0, function
         const userExist = yield message_1.UserMsg.findOne({ username });
         if (!userExist) {
             const newUser = new message_1.UserMsg({
-                username, nonDelMsg: {
-                    sender, nonDeliveredMsg: [msg]
-                }
+                username,
+                nonDelMsg: {
+                    sender,
+                    nonDeliveredMsg: [msg],
+                },
             });
             newUser.save();
         }
         if (userExist) {
             if (userExist === null || userExist === void 0 ? void 0 : userExist.nonDelMsg.find((e) => e.sender === sender)) {
-                console.log('found sender');
-                const result = yield message_1.UserMsg.findOneAndUpdate({ username, 'nonDelMsg.sender': sender }, { '$push': { 'nonDelMsg.$.nonDeliveredMsg': msg } });
-                console.log('result:', JSON.stringify(result));
+                console.log("found sender");
+                const result = yield message_1.UserMsg.findOneAndUpdate({ username, "nonDelMsg.sender": sender }, { $push: { "nonDelMsg.$.nonDeliveredMsg": msg } });
+                console.log("result:", JSON.stringify(result));
             }
             else {
-                yield message_1.UserMsg.findOneAndUpdate({ username }, { '$push': { 'nonDelMsg': { sender, nonDeliveredMsg: msg } } });
+                yield message_1.UserMsg.findOneAndUpdate({ username }, { $push: { nonDelMsg: { sender, nonDeliveredMsg: msg } } });
             }
         }
         res.status(200).json({
-            messages: "message placed"
+            messages: "message placed",
         });
     }
     catch (error) {
         res.status(500).json({
-            message: `${error}`
+            message: `${error}`,
         });
     }
 });
@@ -262,19 +272,23 @@ const getChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username } = req.query;
         const { friend } = req.body;
-        console.log('username: ', username);
+        console.log("username: ", username);
         if (!username || !friend) {
             res.status(400).json({
-                devMessage: 'Bad Request'
+                devMessage: "Bad Request",
             });
             return;
         }
         const index1 = `${username}to${friend}`;
         const index2 = `${friend}to${username}`;
-        const index1Msgs = yield message_2.Messages.find({ index: index1 }).sort({ 'messageArray.timeStamp': 1 });
-        const index2Msgs = yield message_2.Messages.find({ index: index2 }).sort({ 'messageArray.timeStamp': 1 });
-        console.log(`${index1}:`, JSON.stringify(index1Msgs, null, 2));
-        console.log(`${index2}:`, JSON.stringify(index2Msgs, null, 2));
+        const index1Msgs = yield message_2.Messages.find({ index: index1 }).sort({
+            "messageArray.timeStamp": 1,
+        });
+        const index2Msgs = yield message_2.Messages.find({ index: index2 }).sort({
+            "messageArray.timeStamp": 1,
+        });
+        // console.log(`${index1}:`, JSON.stringify(index1Msgs, null, 2));
+        // console.log(`${index2}:`, JSON.stringify(index2Msgs, null, 2));
         let messagess = [];
         // Process index1Msgs
         if (index1Msgs.length > 0 && ((_a = index1Msgs[0].messageArray) === null || _a === void 0 ? void 0 : _a.length) > 0) {
@@ -297,46 +311,48 @@ const getChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if no messages were found
         if ((!index1Msgs.length || !((_d = (_c = index1Msgs[0]) === null || _c === void 0 ? void 0 : _c.messageArray) === null || _d === void 0 ? void 0 : _d.length)) &&
             (!index2Msgs.length || !((_f = (_e = index2Msgs[0]) === null || _e === void 0 ? void 0 : _e.messageArray) === null || _f === void 0 ? void 0 : _f.length))) {
-            console.log('no data found');
+            console.log("no data found");
             res.status(404).json({
-                message: 'no messages found'
+                message: "no messages found",
             });
             return;
         }
-        console.log('messages:', JSON.stringify(messagess));
+        // console.log("messages:", JSON.stringify(messagess));
         res.status(200).json({
-            'messages': messagess.sort((a, b) => {
+            messages: messagess.sort((a, b) => {
                 const time1 = new Date(a.timeStamp).getTime();
                 const time2 = new Date(b.timeStamp).getTime();
                 return time1 - time2;
-            })
+            }),
         });
     }
     catch (error) {
         res.status(500).json({
-            "message": 'internal server error'
+            message: "internal server error",
         });
     }
 });
 exports.getChats = getChats;
 const getGroupChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
-    console.log('-----Group chat history-------');
+    console.log("-----Group chat history-------");
     try {
         const { index } = req.query;
         if (!index) {
             res.status(400).json({
-                devMessage: 'Bad Request'
+                devMessage: "Bad Request",
             });
             return;
         }
-        const indexMsgs = yield message_2.Messages.find({ index }).sort({ 'messageArray.timeStamp': 1 });
+        const indexMsgs = yield message_2.Messages.find({ index }).sort({
+            "messageArray.timeStamp": 1,
+        });
         // console.log('msgs:', indexMsgs);
         // Check if no messages were found
         if (!indexMsgs.length || !((_b = (_a = indexMsgs[0]) === null || _a === void 0 ? void 0 : _a.messageArray) === null || _b === void 0 ? void 0 : _b.length)) {
-            console.log('no data found');
+            console.log("no data found");
             res.status(404).json({
-                message: 'no messages found'
+                message: "no messages found",
             });
             return;
         }
@@ -352,12 +368,12 @@ const getGroupChats = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         console.log("messagess:", JSON.stringify(messagess));
         res.status(200).json({
-            'messages': messagess
+            messages: messagess,
         });
     }
     catch (error) {
         res.status(500).json({
-            "message": 'internal server error'
+            message: "internal server error",
         });
     }
 });
