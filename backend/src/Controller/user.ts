@@ -2,14 +2,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-const { generateToken } = require("../Utils/JWTFunctions");
+import { generateToken,generateResetToken } from "../Utils/JWTFunctions";
 import { User } from "../Model/user";
 import { Friends, friends } from "../Model/friend";
 import { UserMsg } from "../Model/message";
 import { Messages } from "../Model/message";
 import { Message } from "../Model/message";
 import { send } from "../Utils/emailService";
-import { generateResetToken } from "../Utils/JWTFunctions";
 
 export const login = async (req: Request, res: Response) => {
   try {
