@@ -317,6 +317,7 @@ export const getChats = async (req: Request, res: Response) => {
         msg: e.msg,
         timeStamp: e.timeStamp,
         msgBy: username as string,
+        isFile: e.isFile
       }));
       messagess.push(...msgByMe);
     }
@@ -327,6 +328,7 @@ export const getChats = async (req: Request, res: Response) => {
         msg: e.msg,
         timeStamp: e.timeStamp,
         msgBy: friend,
+        isFile: e.isFile
       }));
       messagess.push(...msgByFr);
     }

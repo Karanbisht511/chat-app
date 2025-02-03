@@ -18,13 +18,15 @@ const messages_1 = require("../DB/messages");
 const runSockets = () => {
     try {
         const io = new socket_io_1.Server(index_1.server, {
+            path: "/api/socketio",
+            addTrailingSlash: false,
             cors: {
-                origin: "*", // Allow all origins (use '*' for open access or specify specific origins)
-                methods: ["GET", "POST"], // Allow only these HTTP methods
-                allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
-                credentials: true, // Allow credentials (cookies, authorization headers)
+                origin: "*",
+                credentials: true,
             },
         });
+        // const socket = res.socket as any;
+        // socket.server.io = io;
         let liveUsers = new Map();
         let currentUser;
         io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,13 +34,14 @@ const runSockets = () => {
             socket.on("chat message", (data) => __awaiter(void 0, void 0, void 0, function* () {
                 console.log("---------chat message-----------");
                 console.log("liveUsers:", liveUsers);
-                const { message, from, toSend, isGroup } = data;
+                const { message, from, toSend, isGroup, isFile } = data;
                 console.log("chat message listener");
                 currentUser = from;
                 // console.log("data:", JSON.stringify(data));
                 if (isGroup) {
                     console.log("group chat message");
-                    io.to(toSend).emit("--receive message--", { message, from });
+                    console.log("isFile:", isFile);
+                    io.to(toSend).emit("--receive message--", { message, from, isFile });
                 }
                 else {
                     //    one2one chat
@@ -52,6 +55,7 @@ const runSockets = () => {
                         io.to(receiverSocket).emit("--receive message--", {
                             message,
                             from,
+                            isFile
                         });
                     }
                     else {
@@ -63,6 +67,7 @@ const runSockets = () => {
             socket.on("file transfer", (file_1, _a) => __awaiter(void 0, [file_1, _a], void 0, function* (file, { username, toSend }) {
                 console.log("file:", file);
                 console.log("current user:", username);
+                console.log("toSend:", toSend);
                 let from = username;
                 let message = file;
                 yield (0, messages_1.saveMessageToDB)(`${from}to${toSend}`, message, from);

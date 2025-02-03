@@ -3,18 +3,6 @@ import { server } from "../index";
 import { User } from "../Model/user";
 import { UserMsg } from "../Model/message";
 import { saveMessageToDB } from "../DB/messages";
-// import { Request, Response } from "express";
-
-// const ioHandler = (req: Request, res: Response) => {
-//   const socket = res.socket as any;
-
-//   if (!socket.server.io) {
-//     runSockets(res);
-//   }
-//   res.end();
-// };
-
-// export default ioHandler;
 
 export const runSockets = () => {
   try {
@@ -22,7 +10,7 @@ export const runSockets = () => {
       path: "/api/socketio",
       addTrailingSlash: false,
       cors: {
-        origin: process.env.CLIENT_URL || "*",
+        origin: "*",
         credentials: true,
       },
     });
@@ -36,14 +24,14 @@ export const runSockets = () => {
       socket.on("chat message", async (data) => {
         console.log("---------chat message-----------");
         console.log("liveUsers:", liveUsers);
-        const { message, from, toSend, isGroup } = data;
+        const { message, from, toSend, isGroup, isFile } = data;
         console.log("chat message listener");
         currentUser = from;
         // console.log("data:", JSON.stringify(data));
         if (isGroup) {
           console.log("group chat message");
-
-          io.to(toSend).emit("--receive message--", { message, from });
+          console.log("isFile:", isFile);
+          io.to(toSend).emit("--receive message--", { message, from, isFile });
         } else {
           //    one2one chat
           console.log("one to one chat message");
@@ -57,6 +45,7 @@ export const runSockets = () => {
             io.to(receiverSocket).emit("--receive message--", {
               message,
               from,
+              isFile
             });
           } else {
             console.log(`No active socket found for user: ${toSend}`);
@@ -68,6 +57,7 @@ export const runSockets = () => {
       socket.on("file transfer", async (file, { username, toSend }) => {
         console.log("file:", file);
         console.log("current user:", username);
+        console.log("toSend:", toSend);
         let from = username;
         let message = file;
         await saveMessageToDB(`${from}to${toSend}`, message, from);

@@ -16,13 +16,12 @@ exports.getGroupChats = exports.getChats = exports.placeUnreadMsgs = exports.pus
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const { generateToken } = require("../Utils/JWTFunctions");
+const JWTFunctions_1 = require("../Utils/JWTFunctions");
 const user_1 = require("../Model/user");
 const friend_1 = require("../Model/friend");
 const message_1 = require("../Model/message");
 const message_2 = require("../Model/message");
 const emailService_1 = require("../Utils/emailService");
-const JWTFunctions_1 = require("../Utils/JWTFunctions");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("login");
@@ -43,7 +42,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     console.log("error:" + err);
                 }
                 if (isEqual) {
-                    const token = generateToken(userPayload);
+                    const token = (0, JWTFunctions_1.generateToken)(userPayload);
                     // delete result["passwordHash"];
                     res.status(200).json({
                         success: true,
@@ -296,6 +295,7 @@ const getChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 msg: e.msg,
                 timeStamp: e.timeStamp,
                 msgBy: username,
+                isFile: e.isFile
             }));
             messagess.push(...msgByMe);
         }
@@ -305,6 +305,7 @@ const getChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 msg: e.msg,
                 timeStamp: e.timeStamp,
                 msgBy: friend,
+                isFile: e.isFile
             }));
             messagess.push(...msgByFr);
         }

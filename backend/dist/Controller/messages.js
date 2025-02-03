@@ -45,7 +45,10 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             fileName,
             fileType,
         });
-        res.status(200).json({ message: `File saved successfully` });
+        res.status(200).json({
+            fileName,
+            message: `File saved successfully`,
+        });
     }
     catch (error) {
         res.status(500).json({
@@ -56,19 +59,23 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.uploadFile = uploadFile;
 const downloadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const filePath = path_1.default.join(__dirname, "../../uploads", req.params.fileName);
-        if (fs_1.default.existsSync(filePath)) {
-            res.download(filePath);
-            return;
-        }
-        else {
+        const fileName = req.params.fileName;
+        const filePath = path_1.default.join(__dirname, "../../uploads", fileName);
+        if (!fs_1.default.existsSync(filePath)) {
             res.status(404).json({ error: "File not found" });
         }
+        // Set headers for file download
+        res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+        res.setHeader("Content-Type", "application/octet-stream");
+        // Create read stream and pipe to response
+        const fileStream = fs_1.default.createReadStream(filePath);
+        fileStream.pipe(res);
+        // res.download(filePath);
+        // return;
     }
     catch (error) {
-        res.status(500).json({
-            message: "internal server error",
-        });
+        console.error("Download error:", error);
+        res.status(500).json({ message: "Error downloading file" });
     }
 });
 exports.downloadFile = downloadFile;

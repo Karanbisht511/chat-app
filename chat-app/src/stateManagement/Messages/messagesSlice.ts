@@ -1,5 +1,5 @@
 import { api } from "../api";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IoldMsgs } from "../../components/Messages";
 
 interface IintialState {
@@ -50,6 +50,17 @@ const chatHistorySlice = createSlice({
     cleanUpChat: (state) => {
       state.messages = [];
     },
+    appendMessage: (
+      state,
+      action: PayloadAction<{
+        msgBy: string;
+        isFile: boolean;
+        msg: string;
+        timeStamp: Date;
+      }>
+    ) => {
+      state.messages.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -68,4 +79,4 @@ const chatHistorySlice = createSlice({
 });
 
 export default chatHistorySlice.reducer;
-export const { cleanUpChat } = chatHistorySlice.actions;
+export const { cleanUpChat, appendMessage } = chatHistorySlice.actions;

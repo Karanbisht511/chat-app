@@ -1,11 +1,14 @@
-import { SyntheticEvent, useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useParams } from "react-router";
 import { socket } from "../socket";
 import "./Chats.css";
 import { RootState } from "../stateManagement/store";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../utils/utils";
-import { chatHistory } from "../stateManagement/Messages/messagesSlice";
+import {
+  appendMessage,
+  chatHistory,
+} from "../stateManagement/Messages/messagesSlice";
 import ProfileIcon from "./Icons/ProfileIcon";
 import { useLocation } from "react-router";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
@@ -17,20 +20,25 @@ import {
   faPaperclip,
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import  {  EmojiClickData } from "emoji-picker-react";
+import { EmojiClickData } from "emoji-picker-react";
 import { toggleEmotePopup } from "../stateManagement/PopupContexts/PopupContext";
 import {
-  fileDownload,
   fileUpload,
   cleanUpFileState,
 } from "../stateManagement/Messages/file";
-import { MessageLeft, MessageRight } from "./Message";
+import {
+  MessageLeft,
+  MessageRight,
+  FileMessageLeft,
+  FileMessageRight,
+} from "./Message";
 import Emojis from "./PopUps/Emojis";
 
 export interface IoldMsgs {
   msg: string;
   msgBy: string;
-  timeStamp: string;
+  timeStamp: Date;
+  isFile: boolean;
 }
 
 export const Messages = () => {
@@ -45,7 +53,7 @@ export const Messages = () => {
   const [msg, setMsg] = useState<string>("");
   const [oldMsgs, setOldMsgs] = useState<Array<IoldMsgs>>();
   const [viewSendButton, setViewButton] = useState<boolean>(false);
-  const [selectedFile, setSelectedFile] = useState<File>();
+  // const [selectedFile, setSelectedFile] = useState<File>();
 
   const messageHistory = useSelector(
     (state: RootState) => state.chatHistory.messages
@@ -53,13 +61,14 @@ export const Messages = () => {
   const showEmotePicker = useSelector(
     (state: RootState) => state.contextMenu.emojiBoxPopup
   );
-
+  // const uploadstatus = useSelector(
+  //   (state: RootState) => state.fileContext.uploadState.response
+  // );
   const fileStatus = useSelector(
-    (state: RootState) => state.fileContext.uploadState.response
+    (state: RootState) => state.fileContext.uploadState.response.message
   );
-
-  const downloadedFile = useSelector(
-    (state: RootState) => state.fileContext.downloadState.response
+  const fileName = useSelector(
+    (state: RootState) => state.fileContext.uploadState.response.fileName
   );
 
   const chatListElement: HTMLElement =
@@ -80,68 +89,33 @@ export const Messages = () => {
       socket.emit("join-room", indexName);
     }
 
-    socket.on("--receive message--", ({ message, from }) => {
+    socket.on("--receive message--", ({ message, from, isFile }) => {
       console.log("---------receive message--------");
       console.log("from:", from);
       console.log("message:", message);
+      console.log("isFile:", isFile);
+      dispatch(
+        appendMessage({
+          msgBy: from!,
+          isFile,
+          msg: message,
+          timeStamp: new Date(),
+        })
+      );
 
-      let newDiv = document.createElement("div");
-      newDiv.classList.add("message");
-      newDiv.classList.add("left");
-      let newSpan = document.createElement("span");
-      newSpan.classList.add("text-content");
-      newSpan.style["borderRadius"] = "10px 10px 10px 0px";
-      if (message) newSpan.textContent = message;
-
-      newDiv.appendChild(newSpan);
-
-      const messagesContainer = document.getElementById("messages");
-      messagesContainer?.appendChild(newDiv);
-      if (messagesContainer)
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
+  }, [dispatch, indexName]);
 
-    console.log("fileStatus:", fileStatus);
-
-    if (fileStatus === "File saved successfully") {
-      console.log("File saved successfully");
-
-      let newDiv = document.createElement("div");
-      newDiv.classList.add("message");
-      newDiv.classList.add("right");
-      let newSpan = document.createElement("span");
-      newSpan.classList.add("text-content");
-      newSpan.style["borderRadius"] = "10px 10px 0px 10px";
-      if (selectedFile?.name) newSpan.textContent = selectedFile.name;
-
-      newSpan.addEventListener("click", () => {
-        console.log("clicked");
-        try {
-          const input = { filename: selectedFile?.name! };
-          dispatch(fileDownload(input));
-          console.log("downloadedFile->url:", downloadedFile);
-        } catch (error) {
-          console.error("Error during fileDownload dispatch:", error);
-        }
-      });
-
-      newDiv.appendChild(newSpan);
-
-      const messagesContainer = document.getElementById("messages");
-      messagesContainer?.appendChild(newDiv);
-      if (messagesContainer)
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-      setMsg("");
-      dispatch(cleanUpFileState());
-    }
-  }, [dispatch, indexName, fileStatus]);
+  // useEffect(() => {}, [uploadstatus]);
 
   useEffect(() => {
     if (messageHistory) {
       setOldMsgs(messageHistory);
+      const lastMsg = document.querySelector("#messages > .message:last-child");
+      console.log("lastmsg:", lastMsg);
+      lastMsg?.scrollIntoView({ behavior: "instant", block: "end" });
     }
-    console.log("messageHistory", messageHistory);
+    // console.log("messageHistory", messageHistory);
   }, [messageHistory]);
 
   useEffect(() => {
@@ -154,7 +128,7 @@ export const Messages = () => {
       const file: File = fileSelector.files! && fileSelector.files[0]!;
       if (file) {
         console.log("file:", file);
-        setSelectedFile(file);
+        // setSelectedFile(file);
         const input = {
           file: file,
           message: msg,
@@ -169,32 +143,41 @@ export const Messages = () => {
     })!;
   }, [dispatch]);
 
-  const sendMessage = (e: SyntheticEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (fileStatus === "File saved successfully" && fileName) {
+      console.log("File saved successfully");
+      console.log("fileStatusResponse.fileName:", fileName);
+      sendMessage();
+      dispatch(cleanUpFileState());
+    }
+  }, [fileStatus, fileName]);
+
+  const sendMessage = () => {
+    // e.preventDefault();
     console.log("triggered sendMEssage function");
-    const data = { message: msg, from: username, toSend: indexName, isGroup };
+    console.log("msg:", msg);
+    dispatch(
+      appendMessage({
+        msgBy: username!,
+        isFile: fileName !== "" ? true : false,
+        msg: fileName !== "" ? fileName : msg,
+        timeStamp: new Date(),
+      })
+    );
+    const data = {
+      message: msg === "" ? fileName : msg,
+      from: username,
+      toSend: indexName,
+      isGroup,
+      isFile: fileName === "" ? false : true,
+    };
     console.log("data:", data);
     console.log("is socket active:", socket.active);
 
     socket.emit("chat message", data);
     console.log("chat message event emitted");
-
-    let newDiv = document.createElement("div");
-    newDiv.classList.add("message");
-    newDiv.classList.add("right");
-    let newSpan = document.createElement("span");
-    newSpan.classList.add("text-content");
-    newSpan.style["borderRadius"] = "10px 10px 0px 10px";
-    if (msg) newSpan.textContent = msg;
-
-    newDiv.appendChild(newSpan);
-
-    const messagesContainer = document.getElementById("messages");
-    messagesContainer?.appendChild(newDiv);
-    if (messagesContainer)
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
     setMsg("");
+    // printSentMessage(fileName, msg);
   };
 
   const toggleViewButton = () => {
@@ -207,9 +190,6 @@ export const Messages = () => {
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMsg(e.target.value);
-    console.log(msg?.length);
-    console.log(e.target.value);
-
     toggleViewButton();
   };
 
@@ -259,8 +239,19 @@ export const Messages = () => {
         {oldMsgs !== undefined &&
           oldMsgs?.map((e, index) => {
             if (e.msgBy === username) {
+              if (e.isFile) {
+                // console.log("right is a file", e.isFile);
+
+                return <FileMessageRight msg={e.msg} key={index} />;
+              }
               return <MessageRight msg={e.msg} key={index} />;
             }
+
+            if (e.isFile) {
+              // console.log("left is a file", e.isFile);
+              return <FileMessageLeft msg={e.msg} key={index} />;
+            }
+
             return <MessageLeft msg={e.msg} key={index} />;
           })}
       </div>

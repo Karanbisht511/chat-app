@@ -62,25 +62,28 @@ function Chatpage() {
   }, [dashboardDetails]);
 
   return (
-    <div className="chatpage-container h-screen">
-      {removePartPopup && <RemoveParticipants />}
-      <div
-        className="chatList-wrapper chatList-width"
-        style={{ border: "2px solid black" }}
-      >
-        {friendList && (
-          <FriendList
-            friendList={friendList}
-            users={allUsers}
-            groups={groups}
-          />
-        )}{" "}
-      </div>
-      <div
-        className="chatBox-wrapper chatBox-width"
-        style={{ border: "2px solid black" }}
-      >
-        <Outlet />
+    <div>
+      {/* <div>Header</div> */}
+      <div className="chatpage-container h-screen">
+        {removePartPopup && <RemoveParticipants />}
+        <div
+          className="chatList-wrapper chatList-width"
+          style={{ border: "2px solid black" }}
+        >
+          {friendList && (
+            <FriendList
+              friendList={friendList}
+              users={allUsers}
+              groups={groups}
+            />
+          )}{" "}
+        </div>
+        <div
+          className="chatBox-wrapper chatBox-width"
+          style={{ border: "2px solid black" }}
+        >
+          <Outlet />
+        </div>
       </div>
     </div>
   );

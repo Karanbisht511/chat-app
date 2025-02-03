@@ -11,27 +11,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveMessageToDB = void 0;
 const message_1 = require("../Model/message");
-const saveMessageToDB = (index, message, sender, isFile, fileMetaData) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('index,message,sender ', index, message, sender);
+const saveMessageToDB = (index_1, message_2, sender_1, ...args_1) => __awaiter(void 0, [index_1, message_2, sender_1, ...args_1], void 0, function* (index, message, sender, isFile = false, fileMetaData) {
+    console.log("index,message,sender ", index, message, sender);
     try {
         const indexExist = yield message_1.Messages.find({ index });
         console.log("indexExist:", indexExist);
-        console.log('metadata:', fileMetaData);
-        if (indexExist.length === 0 || JSON.stringify(index.length) === '[]') {
-            console.log('--index dont exist');
+        console.log("metadata:", fileMetaData);
+        if (indexExist.length === 0 || JSON.stringify(index.length) === "[]") {
+            console.log("--index dont exist");
             const saveNew = new message_1.Messages({
                 index,
-                messageArray: [{ "timeStamp": new Date(), "msg": message, "msgBy": sender, isFile, fileMetaData }]
+                messageArray: [
+                    {
+                        timeStamp: new Date(),
+                        msg: message,
+                        msgBy: sender,
+                        isFile,
+                        fileMetaData,
+                    },
+                ],
             });
             saveNew.save();
             return;
         }
-        console.log('----indexExist-----');
-        yield message_1.Messages.findOneAndUpdate({ index }, { '$push': { 'messageArray': { timeStamp: new Date(), msg: message, msgBy: sender, isFile, fileMetaData } } });
+        console.log("----indexExist-----");
+        yield message_1.Messages.findOneAndUpdate({ index }, {
+            $push: {
+                messageArray: {
+                    timeStamp: new Date(),
+                    msg: message,
+                    msgBy: sender,
+                    isFile,
+                    fileMetaData,
+                },
+            },
+        });
         return;
     }
     catch (error) {
-        console.log('error:', error);
+        console.log("error:", error);
     }
 });
 exports.saveMessageToDB = saveMessageToDB;
