@@ -47,6 +47,7 @@ const chatHistorySlice = createSlice({
   name: "chatHistory",
   initialState: chatHistoryInitState,
   reducers: {
+
     cleanUpChat: (state) => {
       state.messages = [];
     },

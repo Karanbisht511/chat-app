@@ -9,10 +9,13 @@ import { RootState } from "../stateManagement/store";
 
 interface Ifriend {
   userName: string;
+  image: string;
   index: number;
 }
 
-const Friend: FC<Ifriend> = ({ userName, index }) => {
+const Friend: FC<Ifriend> = ({ userName, image, index }) => {
+  console.log("userName:", userName);
+
   const dispatch = useAppDispatch();
 
   const showContextMenu = useSelector(
@@ -27,10 +30,12 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
 
   const contextMenuRef = useRef(contextMenu); // Create a ref for the context menu element
 
+  // const blobUrl = URL.createObjectURL(image);
+
   useEffect(() => {
     const handleScroll = () => {
-      console.log('scroll');
-      
+      console.log("scroll");
+
       if (contextMenuRef.current) {
         // Check if the element exists before accessing it
         const position = contextMenuRef.current.getBoundingClientRect();
@@ -70,9 +75,17 @@ const Friend: FC<Ifriend> = ({ userName, index }) => {
         key={userName}
         onClick={handleScreenSize}
       >
-        <div>
-          <ProfileIcon />
-          <span>{userName}</span>
+        <div className="flex justify-start items-center">
+          {image ? (
+            <div className="h-[40px] w-[40px] rounded-full">
+              <img src={image} className="w-full h-full" alt="" />
+            </div>
+          ) : (
+            <ProfileIcon />
+          )}
+          <div className="m-[5px]">
+            <span>{userName}</span>
+          </div>
         </div>
       </Link>
       <div>

@@ -3,12 +3,13 @@ import { server } from "../index";
 import { User } from "../Model/user";
 import { UserMsg } from "../Model/message";
 import { saveMessageToDB } from "../DB/messages";
+// import { Request, Response } from "express";
 
 export const runSockets = () => {
   try {
     const io = new Server(server, {
-      path: "/api/socketio",
-      addTrailingSlash: false,
+      // path: "/api/socketio",
+      // addTrailingSlash: false,
       cors: {
         origin: "*",
         credentials: true,
@@ -45,7 +46,7 @@ export const runSockets = () => {
             io.to(receiverSocket).emit("--receive message--", {
               message,
               from,
-              isFile
+              isFile,
             });
           } else {
             console.log(`No active socket found for user: ${toSend}`);
@@ -138,3 +139,13 @@ export const runSockets = () => {
     console.error("Error adding record:", error);
   }
 };
+
+// export const executeSocket = (req: Request, res: Response) => {
+//   try {
+//     runSockets();
+//     res.json({ message: "Socket is working" });
+//   } catch (error) {
+//     console.log("someerror:", error);
+//     res.send({ error: error });
+//   }
+// };

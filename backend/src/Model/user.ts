@@ -8,6 +8,7 @@ interface iUser extends Document {
   mobile: Number;
   active: Boolean;
   groups?: Array<string>;
+  profilePic?: string;
 }
 
 const userSchema = new Schema({
@@ -16,7 +17,8 @@ const userSchema = new Schema({
   email: { type: String, required: true },
   mobile: { type: Number, required: true },
   active: { type: Boolean, required: true, default: false },
-  groups: { type: Array, required: false }
+  groups: { type: Array, required: false },
+  profilePic: { type: String, required: false },
 });
 
 export const User = model<iUser>("User", userSchema);

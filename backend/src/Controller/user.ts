@@ -2,13 +2,47 @@ import dotenv from "dotenv";
 dotenv.config();
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { generateToken,generateResetToken } from "../Utils/JWTFunctions";
+import { generateToken, generateResetToken } from "../Utils/JWTFunctions";
 import { User } from "../Model/user";
 import { Friends, friends } from "../Model/friend";
 import { UserMsg } from "../Model/message";
 import { Messages } from "../Model/message";
 import { Message } from "../Model/message";
 import { send } from "../Utils/emailService";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import mime from "mime";
+import { getImageFromDir, getFriendImages } from "../Utils/readingImage";
+
+// Define interfaces
+interface UserDocument {
+  username: string;
+  groups: string[];
+  active: boolean;
+}
+
+interface FriendDocument {
+  username: string;
+  friendList: string[];
+}
+
+interface groupDocument {
+  groups: string[];
+}
+
+export interface FriendDetail {
+  name: string;
+  image?: string;
+  imagePath: string | null;
+}
+
+interface DashboardResponse {
+  friendList: FriendDetail[];
+  activeUser: string[];
+  users: string[];
+  groups: FriendDetail[];
+}
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -189,33 +223,47 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
-export const userDashboard = async (req: Request, res: Response) => {
+export const userDashboard = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const { username } = req.query;
-    console.log("username:", username);
-    const result: friends = await Friends.findOne({ username: username });
-    // console.log('friendList:',result.friendList);
-    console.log("results:", result);
+    const username = req.query.username as string;
+    if (!username) {
+      res.status(400).json({ message: "Invalid username" });
+      return;
+    }
 
-    const groups = await User.findOne({ username }).select("groups");
-    console.log("groups:", groups);
+    const [result, groups, users, activeUser] = await Promise.all([
+      Friends.findOne<FriendDocument>({ username }),
+      User.findOne<groupDocument>({ username }).select("groups"),
+      User.find<UserDocument>(),
+      User.find<UserDocument>({ active: true }),
+    ]);
 
-    const users = await User.find();
-    let activeUser = await User.find({ active: true });
+    if (!result) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
 
-    res.status(200).json({
-      friendList: result ? result.friendList : [],
-      activeUser: activeUser ? activeUser.map((e: any) => e.username) : [],
+
+    const friendDetails = await getFriendImages(result.friendList)!;
+    const groupDetails = await getFriendImages(groups.groups)!;
+    // console.log("groupDetails", groupDetails);
+    const response = {
+      friendList: friendDetails,
+      activeUser: activeUser.map((user: UserDocument) => user.username),
       users: users
-        ? users.map((e: any) => {
-            if (e.username !== username) return e.username;
-          })
-        : [],
-      groups: groups ? groups.groups : [],
-    });
+        .filter((user: UserDocument) => user.username !== username)
+        .map((user: UserDocument) => user.username),
+      groups: groupDetails ? groupDetails : [],
+    };
+
+    res.status(200).json(response);
   } catch (error) {
+    console.error("Error in userDashboard:", error);
     res.status(500).json({
-      message: `${error}`,
+      message: error instanceof Error ? error.message : "Internal server error",
     });
   }
 };
@@ -317,7 +365,7 @@ export const getChats = async (req: Request, res: Response) => {
         msg: e.msg,
         timeStamp: e.timeStamp,
         msgBy: username as string,
-        isFile: e.isFile
+        isFile: e.isFile,
       }));
       messagess.push(...msgByMe);
     }
@@ -328,7 +376,7 @@ export const getChats = async (req: Request, res: Response) => {
         msg: e.msg,
         timeStamp: e.timeStamp,
         msgBy: friend,
-        isFile: e.isFile
+        isFile: e.isFile,
       }));
       messagess.push(...msgByFr);
     }
@@ -407,5 +455,80 @@ export const getGroupChats = async (req: Request, res: Response) => {
     res.status(500).json({
       message: "internal server error",
     });
+  }
+};
+
+// Configure multer to save files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = "profilePics/";
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir); // Save to 'uploads/' folder
+  },
+  filename: (req, file, cb) => {
+    console.log("req:", req.body);
+    console.log("req.body.filename:", req.body.fileName);
+    cb(null, `${file.originalname}`);
+  },
+});
+export const profileDir = multer({ storage });
+
+export const updateImage = async (req: Request, res: Response) => {
+  try {
+    console.log("req.file:", req.file);
+    console.log("req.body:", req.body);
+    const { username, fileName } = req.body;
+
+    if (!username) {
+      res.status(400).json({ username: username });
+      return;
+    }
+
+    if (!req.file) {
+      res.status(400).send("No file uploaded.");
+      return;
+    }
+    // Rename the file
+
+    console.log("req.file.path:", req.file.path);
+    const newPath = "profilePics/" + username;
+
+    fs.renameSync(req.file.path, `${newPath}${path.extname(req.file.path)}`);
+    await User.findOneAndUpdate({ username }, { profilePic: fileName });
+
+    const filePath = getImageFromDir(username);
+
+    if (!filePath) {
+      res.status(404).send("File not found");
+      return;
+    }
+    res.sendFile(filePath);
+  } catch (error) {
+    res.status(500).json({
+      message: "internal server error",
+    });
+  }
+};
+
+export const getImage = async (req: Request, res: Response) => {
+  try {
+    const filePath = getImageFromDir(req.params.image);
+    if (!filePath) {
+      res.status(404).send("File not found");
+      return;
+    }
+    // Set security headers
+    res.set({
+      "Content-Security-Policy": "default-src 'self'",
+      "X-Content-Type-Options": "nosniff",
+    });
+
+    // Send the file
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error("Download error:", error);
+    res.status(500).json({ message: "Error serving file" });
   }
 };

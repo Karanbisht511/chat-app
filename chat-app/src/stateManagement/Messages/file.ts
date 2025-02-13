@@ -10,10 +10,59 @@ interface IfileData {
   file: File;
 }
 
+interface ImageState {
+  blobUrl: string | null;
+}
+
 const initialState = {
   uploadState: createResponseState({ message: "", fileName: "" }),
   downloadState: createResponseState({ fileName: "" }),
+  image: createResponseState<ImageState>({ blobUrl: null }),
 };
+
+export const profileImgUpload = createAsyncThunk(
+  "profileImgUpload",
+  async (input: { file: File }) => {
+    const username = sessionStorage.getItem("username");
+    const formData = new FormData();
+    formData.append("file", input.file);
+    formData.append("username", username!);
+
+    const result = await api.post("/users/uploadImage", formData, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
+      },
+    });
+    
+    if (initialState.image.response.blobUrl) {
+      URL.revokeObjectURL(initialState.image.response.blobUrl);
+    }
+
+    const blobUrl = URL.createObjectURL(result.data);
+    return { blobUrl };
+  }
+);
+
+export const getImage = createAsyncThunk("getImage", async (image: string) => {
+  const result = await api.get(`/messages/image/${image}`, {
+    responseType: "blob",
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
+    },
+  });
+
+  // Add error logging
+  console.log("API Response:", result);
+  console.log("Promise State:", result.status);
+
+  // Revoke any existing blob URL before creating a new one
+  if (initialState.image.response.blobUrl) {
+    URL.revokeObjectURL(initialState.image.response.blobUrl);
+  }
+
+  const blobUrl = URL.createObjectURL(result.data);
+  return { blobUrl };
+});
 
 export const fileUpload = createAsyncThunk(
   "fileUpload",
@@ -78,13 +127,8 @@ const fileSlice = createSlice({
   name: "fileSlice",
   initialState,
   reducers: {
-    cleanUpFileState: (state) => {
-      state.downloadState.response = { fileName: "" };
-      state.downloadState.error = null;
-      state.downloadState.status = "idle";
-      state.uploadState.response = { message: "", fileName: "" };
-      state.uploadState.status = "idle";
-      state.uploadState.error = null;
+    cleanUpFileState: () => {
+      return initialState;
     },
   },
   extraReducers: (builder) => {
@@ -113,6 +157,30 @@ const fileSlice = createSlice({
         state.downloadState.status = "failed";
         if (action.error.message)
           state.downloadState.error = action.error.message;
+      })
+      .addCase(getImage.pending, (state) => {
+        state.image.status = "loading";
+      })
+      .addCase(getImage.fulfilled, (state, action) => {
+        state.image.status = "success";
+        console.log("Response from getImage:",JSON.stringify(action.payload));
+        
+        state.image.response = action.payload;
+      })
+      .addCase(getImage.rejected, (state, action) => {
+        state.image.status = "failed";
+        if (action.error.message) state.image.error = action.error.message;
+      })
+      .addCase(profileImgUpload.pending, (state) => {
+        state.image.status = "loading";
+      })
+      .addCase(profileImgUpload.fulfilled, (state, action) => {
+        state.image.status = "success";
+        state.image.response = action.payload;
+      })
+      .addCase(profileImgUpload.rejected, (state, action) => {
+        state.image.status = "failed";
+        if (action.error.message) state.image.error = action.error.message;
       });
   },
 });

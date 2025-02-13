@@ -13,18 +13,30 @@ import {
 } from "../stateManagement/PopupContexts/PopupContext";
 import AddGroupMembers from "./PopUps/AddGroupMembers";
 import CreateGroupPopup from "./PopUps/CreateGroupPopup";
-import Group from "./Group";
+// import Group from "./Group";
 import { groupCleanup } from "../stateManagement/Groups/GroupSlice";
 import Search from "./Search";
+import ProfileIcon from "./Icons/ProfileIcon";
+import { Link } from "react-router";
+import { ProfilePic } from "./Profile";
+import { useEffect } from "react";
+import { getImage } from "../stateManagement/Messages/file";
+
+interface friendDetail {
+  name: string;
+  image?: string;
+  imagePath?: string;
+}
 
 interface PList {
-  friendList: string[];
+  friendList: friendDetail[];
   users: string[];
-  groups: string[];
+  groups: friendDetail[];
 }
 
 const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
   const dispatch = useAppDispatch();
+  const username = sessionStorage.getItem("username");
   const showNewChatPopup = useSelector(
     (state: RootState) => state.contextMenu.newChatPopup
   );
@@ -34,6 +46,14 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
   const showCreateGroupPopup = useSelector(
     (state: RootState) => state.contextMenu.createGroupPopup
   );
+  const isProfPic = useSelector(
+    (state: RootState) => state.fileContext.image.status
+  );
+
+  useEffect(() => {
+    // dispatch(getImage(`${username!}.jpg`));
+    dispatch(getImage(username!));
+  }, [username, dispatch]);
 
   const handlePopup = () => {
     dispatch(groupCleanup()); //Remove add to participants from state
@@ -50,8 +70,19 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
 
   return (
     <div className="chatList h-full">
-      <div className="user-name flex justify-between">
+      <div className="user-name flex justify-between items-center">
+        <div className="flex justify-between items-center">
+          <span>
+            {" "}
+            <Link to="/profile">
+              <div className="h-[40px] w-[40px] rounded-full">
+                {isProfPic !== "success" ? <ProfileIcon /> : <ProfilePic />}
+              </div>
+            </Link>
+          </span>{" "}
+        </div>
         <div>
+          {" "}
           <span>Chats</span>
         </div>
         <div>
@@ -69,8 +100,17 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
       <div id="friends-list">
         <div className="users-wrapper">
           {friendList.length > 0
-            ? friendList.map((e: string, index: number) => {
-                return <Friend userName={e} index={index} key={index} />;
+            ? friendList.map((e: friendDetail, index: number) => {
+                console.log("e:", e);
+
+                return (
+                  <Friend
+                    userName={e.name}
+                    image={e.image!}
+                    index={index}
+                    key={index}
+                  />
+                );
               })
             : "No Active Friends"}
         </div>
@@ -80,8 +120,15 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
         </div>
         <div className="group-wrapper">
           {groups.length > 0
-            ? groups.map((e: string, index: number) => {
-                return <Group groupName={e} index={index} key={index} />;
+            ? groups.map((e: friendDetail, index: number) => {
+                return (
+                  <Friend
+                    userName={e.name}
+                    image={e.image!}
+                    index={index}
+                    key={index}
+                  />
+                );
               })
             : "No Groups"}
         </div>

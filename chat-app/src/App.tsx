@@ -11,6 +11,7 @@ import {
   Reset,
 } from "./components/Authentication/ResetPassword";
 import Signup from "./components/Authentication/Signup";
+import Profile from "./components/Profile";
 
 function App() {
   const isLoggedIn = useSelector(
@@ -41,6 +42,7 @@ function App() {
           <Route path="success" element={<Success />} />
           <Route path=":token" element={<Reset />} />
         </Route>
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

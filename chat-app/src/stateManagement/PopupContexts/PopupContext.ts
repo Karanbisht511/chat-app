@@ -24,6 +24,12 @@ const popupContexts = createSlice({
   name: "popupContext",
   initialState,
   reducers: {
+    resetState: (state, action) => {
+      if (action.type === "RESET_APP") {
+        return initialState;
+      }
+      return state;
+    },
     toggleChatContext: (state, action: PayloadAction<{ index: number }>) => {
       state.chatContextArr[action.payload.index] =
         !state.chatContextArr[action.payload.index];
@@ -104,4 +110,5 @@ export const {
   toggleRemoveParticpantsPopup,
   toggleEmotePopup,
   closeAllPopUp,
+  resetState
 } = popupContexts.actions;

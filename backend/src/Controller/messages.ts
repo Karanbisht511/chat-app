@@ -7,7 +7,7 @@ import { saveMessageToDB } from "../DB/messages";
 // Configure multer to save files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = "uploads/";
+    const uploadDir = "uploadsFiles/";
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
     }

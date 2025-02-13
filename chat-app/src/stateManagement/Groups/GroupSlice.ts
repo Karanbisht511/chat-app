@@ -60,15 +60,11 @@ export const removeParticipant = createAsyncThunk(
       groupName: input.groupName,
       participant: sessionStorage.getItem("username"),
     };
-    const res = await api.post(
-      `/group/removeParticipant`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
-        },
-      }
-    );
+    const res = await api.post(`/group/removeParticipant`, payload, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
+      },
+    });
     return res.data.messages;
   }
 );
@@ -77,6 +73,11 @@ const groupSlice = createSlice({
   name: "createGroup",
   initialState,
   reducers: {
+    resetGroup: () => {
+      
+        return initialState;
+
+    },
     addParticipants: (
       state,
       action: PayloadAction<{ participant: string }>
@@ -145,5 +146,5 @@ const groupSlice = createSlice({
 // });
 
 // export const { removePart } = removePartipantSlice.actions
-export const { addParticipants, removePart, groupCleanup } = groupSlice.actions;
+export const { addParticipants, removePart, groupCleanup,resetGroup } = groupSlice.actions;
 export default groupSlice.reducer;

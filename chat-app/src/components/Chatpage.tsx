@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { socket } from "../socket";
 // import { Link } from 'react-router';
 import FriendList from "./FriendList";
@@ -12,15 +12,12 @@ import RemoveParticipants from "./PopUps/RemoveParticipants";
 
 function Chatpage() {
   const dispatch = useAppDispatch();
-  const [friendList, setFriendList] = useState<Array<string>>();
-  const [allUsers, setAllusers] = useState<Array<string>>([]);
-  const [groups, SetGroups] = useState<Array<string>>([]);
   const loginDetails = useSelector(
     (state: RootState) => state.login.loginState.response
   );
   console.log("loginDetails:", loginDetails);
   const dashboardDetails = useSelector(
-    (state: RootState) => state.dashboard.dashboard
+    (state: RootState) => state.dashboard.response
   );
   const username = sessionStorage.getItem("username");
   const newChatAdded = useSelector(
@@ -46,20 +43,10 @@ function Chatpage() {
       console.log("when user login event completed");
     }
 
-    // return () => {
-    //   socket.disconnect();
-    // };
+    return () => {
+      socket.disconnect();
+    };
   }, [dispatch, username, newChatAdded]);
-
-  useEffect(() => {
-    console.log("dashboardDetails:", JSON.stringify(dashboardDetails));
-
-    if (dashboardDetails) {
-      setFriendList(dashboardDetails.friendList || []);
-      setAllusers(dashboardDetails.users || []);
-      SetGroups(dashboardDetails.groups || []);
-    }
-  }, [dashboardDetails]);
 
   return (
     <div>
@@ -70,11 +57,11 @@ function Chatpage() {
           className="chatList-wrapper chatList-width"
           style={{ border: "2px solid black" }}
         >
-          {friendList && (
+          {dashboardDetails && (
             <FriendList
-              friendList={friendList}
-              users={allUsers}
-              groups={groups}
+              friendList={dashboardDetails.friendList}
+              users={dashboardDetails.users}
+              groups={dashboardDetails.groups}
             />
           )}{" "}
         </div>

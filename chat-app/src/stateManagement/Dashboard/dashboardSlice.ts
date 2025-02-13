@@ -1,39 +1,81 @@
 import { api } from "../api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createResponseState } from "../Authentication/Authentication";
+
+interface friendDetails {
+  name: string;
+  image?: any;
+  imagePath?: any;
+}
+
+interface IDashboard {
+  friendList: Array<friendDetails>;
+  users: Array<string>;
+  groups: Array<friendDetails>;
+}
+
+const initDashboard = createResponseState<IDashboard>({
+  friendList: [],
+  users: [],
+  groups: [],
+});
+
+const initNewChat = {
+  status: "idle",
+  error: "",
+};
 
 export const dashboard = createAsyncThunk("dashboard", async () => {
   const username = sessionStorage.getItem("username");
   console.log("dashboardSlice->username:", username);
 
-  const res = await api.get(
-    `/users/dashboard?username=${username}`,
-    {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
-      },
-    }
-  );
-  console.log("res:", res);
-  return res.data;
+  const result = await api.get(`/users/dashboard?username=${username}`, {
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
+    },
+  });
+  // Add error logging
+  return { result: result.data };
 });
 
 export const dashboardReducer = createSlice({
   name: "dashboard",
-  initialState: {
-    dashboard: { friendList: [], users: [], groups: [] },
-    status: "idle",
-    error: "",
+  initialState: initDashboard,
+  reducers: {
+    resetDashboard: () => {
+      return initDashboard;
+    },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(dashboard.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(dashboard.fulfilled, (state, action) => {
-        state.status = "success";
-        state.dashboard = action.payload;
-      })
+      .addCase(
+        dashboard.fulfilled,
+        (state, action: PayloadAction<{ result: IDashboard }>) => {
+          state.status = "success";
+          console.log("Result:", JSON.stringify(action.payload.result));
+
+          const { groups, users, friendList } = action.payload.result;
+          // Handling imageUrl as a Blob and creating a URL object for it
+          const list = friendList.map(
+            ({ name, image, imagePath }: friendDetails) => {
+              if (imagePath === null) {
+              }
+
+              return {
+                name,
+                image: imagePath ? image : null,
+              };
+            }
+          );
+
+          // Construct the final response object
+          const res: IDashboard = { groups, users, friendList: list };
+          state.response = res;
+        }
+      )
       .addCase(dashboard.rejected, (state, action) => {
         state.status = "failed";
         if (action.error.message) state.error = action.error.message;
@@ -61,8 +103,9 @@ export const addNewChat = createAsyncThunk(
 );
 
 export const newChatReducer = createSlice({
-  name: "dashboard",
+  name: "newChat",
   initialState: {
+    response: "",
     status: "idle",
     error: "",
   },
@@ -88,7 +131,7 @@ export const deleteChat = createAsyncThunk(
   async (friend: string) => {
     const username = sessionStorage.getItem("username");
     const res = await api.post(
-      `/api/friends/deleteFriend?username=${username}`,
+      `friends/deleteFriend?username=${username}`,
       {
         frToDelete: friend,
       },
@@ -104,11 +147,15 @@ export const deleteChat = createAsyncThunk(
 
 export const deleteChatReducer = createSlice({
   name: "dashboard",
-  initialState: {
-    status: "idle",
-    error: "",
+  initialState: initNewChat,
+  reducers: {
+    resetState: (state, action) => {
+      if (action.type === "RESET_APP") {
+        return initNewChat;
+      }
+      return state;
+    },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(deleteChat.pending, (state) => {

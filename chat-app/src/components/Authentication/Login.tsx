@@ -7,8 +7,12 @@ import { Link } from "react-router";
 
 export default function Login() {
   const dispatch = useAppDispatch();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("user22");
+  const [password, setPassword] = useState("passWord");
+
+  // const [username, setUsername] = useState("Rahul");
+  // const [password, setPassword] = useState("rahulPass");
+
 
   const LoginUser = async (e: SyntheticEvent) => {
     e.preventDefault();
