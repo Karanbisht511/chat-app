@@ -13,7 +13,11 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import mime from "mime";
-import { getImageFromDir, getFriendImages } from "../Utils/readingImage";
+import {
+  getImagePath,
+  getFriendImages,
+  fetchImage,
+} from "../Utils/readingImage";
 
 // Define interfaces
 interface UserDocument {
@@ -56,7 +60,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Invalid User Credentials!" });
     } else if (result) {
       await User.findOneAndUpdate({ username }, { active: true });
-      console.log(result);
+      // console.log(result);
       const { _id } = result;
       const userPayload = { userId: _id };
       const { passwordHash } = result;
@@ -245,7 +249,6 @@ export const userDashboard = async (
       res.status(404).json({ message: "User not found" });
       return;
     }
-
 
     const friendDetails = await getFriendImages(result.friendList)!;
     const groupDetails = await getFriendImages(groups.groups)!;
@@ -465,7 +468,7 @@ const storage = multer.diskStorage({
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
     }
-    cb(null, uploadDir); // Save to 'uploads/' folder
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     console.log("req:", req.body);
@@ -494,17 +497,18 @@ export const updateImage = async (req: Request, res: Response) => {
 
     console.log("req.file.path:", req.file.path);
     const newPath = "profilePics/" + username;
-
     fs.renameSync(req.file.path, `${newPath}${path.extname(req.file.path)}`);
     await User.findOneAndUpdate({ username }, { profilePic: fileName });
+    console.log("req.params.image:", req.params.image);
+    const image = await fetchImage(username);
+    // const image = await fetchImage(username+path.extname(req.file.path));
+    console.log("filePath:", image);
 
-    const filePath = getImageFromDir(username);
-
-    if (!filePath) {
+    if (!image) {
       res.status(404).send("File not found");
       return;
     }
-    res.sendFile(filePath);
+    res.send(image);
   } catch (error) {
     res.status(500).json({
       message: "internal server error",
@@ -514,19 +518,22 @@ export const updateImage = async (req: Request, res: Response) => {
 
 export const getImage = async (req: Request, res: Response) => {
   try {
-    const filePath = getImageFromDir(req.params.image);
-    if (!filePath) {
+    console.log("req.params.image:", req.params.image);
+    const image = await fetchImage(req.params.image);
+    console.log("filePath:", image);
+    // const filePath = getImagePath(req.params.image);
+    if (!image) {
       res.status(404).send("File not found");
       return;
     }
-    // Set security headers
-    res.set({
-      "Content-Security-Policy": "default-src 'self'",
-      "X-Content-Type-Options": "nosniff",
-    });
+    // // Set security headers
+    // res.set({
+    //   "Content-Security-Policy": "default-src 'self'",
+    //   "X-Content-Type-Options": "nosniff",
+    // });
 
     // Send the file
-    res.sendFile(filePath);
+    res.send(image);
   } catch (error) {
     console.error("Download error:", error);
     res.status(500).json({ message: "Error serving file" });

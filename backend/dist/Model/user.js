@@ -8,6 +8,7 @@ const userSchema = new mongoose_1.Schema({
     email: { type: String, required: true },
     mobile: { type: Number, required: true },
     active: { type: Boolean, required: true, default: false },
-    groups: { type: Array, required: false }
+    groups: { type: Array, required: false },
+    profilePic: { type: String, required: false },
 });
 exports.User = (0, mongoose_1.model)("User", userSchema);

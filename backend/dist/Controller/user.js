@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGroupChats = exports.getChats = exports.placeUnreadMsgs = exports.pushUnreadMsgs = exports.userDashboard = exports.resetPassword = exports.forgotPassword = exports.logout = exports.signup = exports.login = void 0;
+exports.getImage = exports.updateImage = exports.profileDir = exports.getGroupChats = exports.getChats = exports.placeUnreadMsgs = exports.pushUnreadMsgs = exports.userDashboard = exports.resetPassword = exports.forgotPassword = exports.logout = exports.signup = exports.login = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
@@ -22,6 +22,10 @@ const friend_1 = require("../Model/friend");
 const message_1 = require("../Model/message");
 const message_2 = require("../Model/message");
 const emailService_1 = require("../Utils/emailService");
+const multer_1 = __importDefault(require("multer"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const readingImage_1 = require("../Utils/readingImage");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("login");
@@ -33,7 +37,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         else if (result) {
             yield user_1.User.findOneAndUpdate({ username }, { active: true });
-            console.log(result);
+            // console.log(result);
             const { _id } = result;
             const userPayload = { userId: _id };
             const { passwordHash } = result;
@@ -182,30 +186,38 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.resetPassword = resetPassword;
 const userDashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { username } = req.query;
-        console.log("username:", username);
-        const result = yield friend_1.Friends.findOne({ username: username });
-        // console.log('friendList:',result.friendList);
-        console.log("results:", result);
-        const groups = yield user_1.User.findOne({ username }).select("groups");
-        console.log("groups:", groups);
-        const users = yield user_1.User.find();
-        let activeUser = yield user_1.User.find({ active: true });
-        res.status(200).json({
-            friendList: result ? result.friendList : [],
-            activeUser: activeUser ? activeUser.map((e) => e.username) : [],
+        const username = req.query.username;
+        if (!username) {
+            res.status(400).json({ message: "Invalid username" });
+            return;
+        }
+        const [result, groups, users, activeUser] = yield Promise.all([
+            friend_1.Friends.findOne({ username }),
+            user_1.User.findOne({ username }).select("groups"),
+            user_1.User.find(),
+            user_1.User.find({ active: true }),
+        ]);
+        if (!result) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+        const friendDetails = yield (0, readingImage_1.getFriendImages)(result.friendList);
+        const groupDetails = yield (0, readingImage_1.getFriendImages)(groups.groups);
+        // console.log("groupDetails", groupDetails);
+        const response = {
+            friendList: friendDetails,
+            activeUser: activeUser.map((user) => user.username),
             users: users
-                ? users.map((e) => {
-                    if (e.username !== username)
-                        return e.username;
-                })
-                : [],
-            groups: groups ? groups.groups : [],
-        });
+                .filter((user) => user.username !== username)
+                .map((user) => user.username),
+            groups: groupDetails ? groupDetails : [],
+        };
+        res.status(200).json(response);
     }
     catch (error) {
+        console.error("Error in userDashboard:", error);
         res.status(500).json({
-            message: `${error}`,
+            message: error instanceof Error ? error.message : "Internal server error",
         });
     }
 });
@@ -295,7 +307,7 @@ const getChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 msg: e.msg,
                 timeStamp: e.timeStamp,
                 msgBy: username,
-                isFile: e.isFile
+                isFile: e.isFile,
             }));
             messagess.push(...msgByMe);
         }
@@ -305,7 +317,7 @@ const getChats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 msg: e.msg,
                 timeStamp: e.timeStamp,
                 msgBy: friend,
-                isFile: e.isFile
+                isFile: e.isFile,
             }));
             messagess.push(...msgByFr);
         }
@@ -379,3 +391,78 @@ const getGroupChats = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getGroupChats = getGroupChats;
+// Configure multer to save files
+const storage = multer_1.default.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = "profilePics/";
+        if (!fs_1.default.existsSync(uploadDir)) {
+            fs_1.default.mkdirSync(uploadDir);
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        console.log("req:", req.body);
+        console.log("req.body.filename:", req.body.fileName);
+        cb(null, `${file.originalname}`);
+    },
+});
+exports.profileDir = (0, multer_1.default)({ storage });
+const updateImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("req.file:", req.file);
+        console.log("req.body:", req.body);
+        const { username, fileName } = req.body;
+        if (!username) {
+            res.status(400).json({ username: username });
+            return;
+        }
+        if (!req.file) {
+            res.status(400).send("No file uploaded.");
+            return;
+        }
+        // Rename the file
+        console.log("req.file.path:", req.file.path);
+        const newPath = "profilePics/" + username;
+        fs_1.default.renameSync(req.file.path, `${newPath}${path_1.default.extname(req.file.path)}`);
+        yield user_1.User.findOneAndUpdate({ username }, { profilePic: fileName });
+        console.log("req.params.image:", req.params.image);
+        const image = yield (0, readingImage_1.fetchImage)(username);
+        // const image = await fetchImage(username+path.extname(req.file.path));
+        console.log("filePath:", image);
+        if (!image) {
+            res.status(404).send("File not found");
+            return;
+        }
+        res.send(image);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "internal server error",
+        });
+    }
+});
+exports.updateImage = updateImage;
+const getImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("req.params.image:", req.params.image);
+        const image = yield (0, readingImage_1.fetchImage)(req.params.image);
+        console.log("filePath:", image);
+        // const filePath = getImagePath(req.params.image);
+        if (!image) {
+            res.status(404).send("File not found");
+            return;
+        }
+        // // Set security headers
+        // res.set({
+        //   "Content-Security-Policy": "default-src 'self'",
+        //   "X-Content-Type-Options": "nosniff",
+        // });
+        // Send the file
+        res.send(image);
+    }
+    catch (error) {
+        console.error("Download error:", error);
+        res.status(500).json({ message: "Error serving file" });
+    }
+});
+exports.getImage = getImage;

@@ -15,11 +15,12 @@ const index_1 = require("../index");
 const user_1 = require("../Model/user");
 const message_1 = require("../Model/message");
 const messages_1 = require("../DB/messages");
+// import { Request, Response } from "express";
 const runSockets = () => {
     try {
         const io = new socket_io_1.Server(index_1.server, {
-            path: "/api/socketio",
-            addTrailingSlash: false,
+            // path: "/api/socketio",
+            // addTrailingSlash: false,
             cors: {
                 origin: "*",
                 credentials: true,
@@ -55,7 +56,7 @@ const runSockets = () => {
                         io.to(receiverSocket).emit("--receive message--", {
                             message,
                             from,
-                            isFile
+                            isFile,
                         });
                     }
                     else {
@@ -135,3 +136,12 @@ const runSockets = () => {
     }
 };
 exports.runSockets = runSockets;
+// export const executeSocket = (req: Request, res: Response) => {
+//   try {
+//     runSockets();
+//     res.json({ message: "Socket is working" });
+//   } catch (error) {
+//     console.log("someerror:", error);
+//     res.send({ error: error });
+//   }
+// };

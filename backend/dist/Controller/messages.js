@@ -20,7 +20,7 @@ const messages_1 = require("../DB/messages");
 // Configure multer to save files
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = "uploads/";
+        const uploadDir = "uploadsFiles/";
         if (!fs_1.default.existsSync(uploadDir)) {
             fs_1.default.mkdirSync(uploadDir);
         }

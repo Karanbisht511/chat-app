@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import Logout from "./Authentication/Logout";
 import { useAppDispatch } from "../utils/utils";
 import { useSelector } from "react-redux";
@@ -8,18 +8,12 @@ import { profileImgUpload } from "../stateManagement/Messages/file";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
-  const urName=sessionStorage.getItem("username")!
+  const urName = sessionStorage.getItem("username")!;
   const [username, setUsername] = useState(urName);
+  const [upload, setUpload] = useState<boolean>();
 
-  const uploadProfie = () => {
-    console.log("handleAttachment");
-    const fileSelector: HTMLInputElement =
-      document.querySelector(".input-image")!;
-    fileSelector.click();
-
-    fileSelector?.addEventListener("change", () => {
-      console.log("file detected");
-
+  const uploadProfilePic = () => {
+    const handleChange = () => {
       const file: File = fileSelector.files! && fileSelector.files[0]!;
       if (file) {
         const input = {
@@ -28,8 +22,14 @@ const Profile = () => {
         console.log("file upload Input:", input);
 
         dispatch(profileImgUpload(input));
+        setUpload(!upload);
       }
-    });
+    };
+    const fileSelector: HTMLInputElement =
+      document.querySelector(".input-image")!;
+    fileSelector?.removeEventListener("change", handleChange);
+    fileSelector?.addEventListener("change", handleChange);
+    fileSelector.click();
   };
 
   return (
@@ -47,12 +47,16 @@ const Profile = () => {
             <ScaleUpPic />
             <span>Enter your name and an optional profile picture</span>
           </div>
-          <div style={{ color: "#24BC62" }} onClick={uploadProfie}>
-            <input
-              type="file"
-              className="input-image"
-              style={{ display: "none" }}
-            />
+          <input
+            type="file"
+            className="input-image"
+            style={{ display: "none" }}
+          />
+          <div
+            className="input-image-wrapper"
+            style={{ color: "#24BC62" }}
+            onClick={uploadProfilePic}
+          >
             Edit
           </div>
           <div className="border-x-[2px]-[#464646]">
@@ -90,11 +94,9 @@ const Profile = () => {
 
 const ScaleUpPic = () => {
   const [scaleup, setScaleup] = useState<Boolean>(false);
-  const isProfPic = useSelector(
-    (state: RootState) => state.fileContext.image.status
-  );
+  const { status } = useSelector((state: RootState) => state.fileContext.image);
 
-  if (isProfPic === "loading" || isProfPic === "failed") {
+  if (status === "loading" || status === "failed") {
     return <ProfileIcon />;
   }
 
@@ -116,24 +118,12 @@ const ScaleUpPic = () => {
 };
 
 export const ProfilePic = () => {
-
-  const { response } = useSelector(
-    (state: RootState) => state.fileContext.image
+  const url = useSelector(
+    (state: RootState) => state.fileContext.image.response
   );
+  console.log("URL:", url);
 
-  // useEffect(() => {
-  //   dispatch(getImage(username!));
-  // }, [dispatch]);
-
-  // if (status === "loading") {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (status === "failed") {
-  //   return <div>Error loading image: {error}</div>;
-  // }
-
-  return <img src={response.blobUrl!} className="w-full h-full" alt="" />;
+  return <img src={url!} className="w-full h-full" alt="" />;
 };
 
 export default Profile;

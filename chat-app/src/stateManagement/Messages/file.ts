@@ -10,14 +10,10 @@ interface IfileData {
   file: File;
 }
 
-interface ImageState {
-  blobUrl: string | null;
-}
-
 const initialState = {
   uploadState: createResponseState({ message: "", fileName: "" }),
   downloadState: createResponseState({ fileName: "" }),
-  image: createResponseState<ImageState>({ blobUrl: null }),
+  image: createResponseState(""),
 };
 
 export const profileImgUpload = createAsyncThunk(
@@ -33,19 +29,17 @@ export const profileImgUpload = createAsyncThunk(
         Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
       },
     });
-    
-    if (initialState.image.response.blobUrl) {
-      URL.revokeObjectURL(initialState.image.response.blobUrl);
-    }
 
-    const blobUrl = URL.createObjectURL(result.data);
-    return { blobUrl };
+    // Add error logging
+    console.log("API Response:", result);
+    console.log("Promise State:", result.status);
+
+    return result.data;
   }
 );
 
 export const getImage = createAsyncThunk("getImage", async (image: string) => {
   const result = await api.get(`/messages/image/${image}`, {
-    responseType: "blob",
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem("JWTToken")}`,
     },
@@ -55,13 +49,7 @@ export const getImage = createAsyncThunk("getImage", async (image: string) => {
   console.log("API Response:", result);
   console.log("Promise State:", result.status);
 
-  // Revoke any existing blob URL before creating a new one
-  if (initialState.image.response.blobUrl) {
-    URL.revokeObjectURL(initialState.image.response.blobUrl);
-  }
-
-  const blobUrl = URL.createObjectURL(result.data);
-  return { blobUrl };
+  return result.data;
 });
 
 export const fileUpload = createAsyncThunk(
@@ -163,8 +151,8 @@ const fileSlice = createSlice({
       })
       .addCase(getImage.fulfilled, (state, action) => {
         state.image.status = "success";
-        console.log("Response from getImage:",JSON.stringify(action.payload));
-        
+        console.log("Response from getImage:", JSON.stringify(action.payload));
+
         state.image.response = action.payload;
       })
       .addCase(getImage.rejected, (state, action) => {
@@ -176,6 +164,10 @@ const fileSlice = createSlice({
       })
       .addCase(profileImgUpload.fulfilled, (state, action) => {
         state.image.status = "success";
+        console.log(
+          "Response from profileImgUpload:",
+          JSON.stringify(action.payload)
+        );
         state.image.response = action.payload;
       })
       .addCase(profileImgUpload.rejected, (state, action) => {
