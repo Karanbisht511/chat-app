@@ -59,20 +59,22 @@ export const dashboardReducer = createSlice({
 
           const { groups, users, friendList } = action.payload.result;
           // Handling imageUrl as a Blob and creating a URL object for it
-          const list = friendList.map(
-            ({ name, image, imagePath }: friendDetails) => {
-              if (imagePath === null) {
-              }
+          let list;
+          if (friendList)
+            list = friendList.map(
+              ({ name, image, imagePath }: friendDetails) => {
+                if (imagePath === null) {
+                }
 
-              return {
-                name,
-                image: imagePath ? image : null,
-              };
-            }
-          );
+                return {
+                  name,
+                  image: imagePath ? image : null,
+                };
+              }
+            );
 
           // Construct the final response object
-          const res: IDashboard = { groups, users, friendList: list };
+          const res: IDashboard = { groups, users, friendList: list ?? [] };
           state.response = res;
         }
       )

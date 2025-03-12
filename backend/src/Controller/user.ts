@@ -238,6 +238,8 @@ export const userDashboard = async (
       return;
     }
 
+    // console.log("username:", username);
+
     const [result, groups, users, activeUser] = await Promise.all([
       Friends.findOne<FriendDocument>({ username }),
       User.findOne<groupDocument>({ username }).select("groups"),
@@ -245,13 +247,16 @@ export const userDashboard = async (
       User.find<UserDocument>({ active: true }),
     ]);
 
-    if (!result) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
+    // if (!result) {
+    //   res.status(404).json({ message: "User not found" });
+    //   return;
+    // }
 
-    const friendDetails = await getFriendImages(result.friendList)!;
-    const groupDetails = await getFriendImages(groups.groups)!;
+    let friendDetails: FriendDetail[], groupDetails: FriendDetail[];
+    if (result && result.friendList)
+      friendDetails = await getFriendImages(result.friendList)!;
+    if (groups && groups.groups)
+      groupDetails = await getFriendImages(groups.groups)!;
     // console.log("groupDetails", groupDetails);
     const response = {
       friendList: friendDetails,
@@ -520,7 +525,7 @@ export const getImage = async (req: Request, res: Response) => {
   try {
     console.log("req.params.image:", req.params.image);
     const image = await fetchImage(req.params.image);
-    console.log("filePath:", image);
+    // console.log("filePath:", image);
     // const filePath = getImagePath(req.params.image);
     if (!image) {
       res.status(404).send("File not found");

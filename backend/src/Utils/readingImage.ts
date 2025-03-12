@@ -41,12 +41,12 @@ export const getFriendImages = async (
 };
 
 export const getImagePath = (imageName: string): string => {
-  console.log("imageName:", imageName);
+  // console.log("imageName:", imageName);
 
   const filePath1 = path.join(__dirname, `../../profilePics/`);
   // console.log("filePath1:", filePath1);
   const files = fs.readdirSync(filePath1);
-  console.log("files:", files);
+  // console.log("files:", files);
   const fileName = files.filter((file) => file.split(".")[0] === imageName)[0];
   const filePath2 = path.join(__dirname, `../../profilePics/${fileName}`);
   // console.log("filePath2:", filePath2);

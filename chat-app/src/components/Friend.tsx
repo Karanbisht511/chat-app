@@ -11,9 +11,10 @@ interface Ifriend {
   userName: string;
   image: string;
   index: number;
+  isGroup?: boolean;
 }
 
-const Friend: FC<Ifriend> = ({ userName, image, index }) => {
+const Friend: FC<Ifriend> = ({ userName, image, index, isGroup = false }) => {
   console.log("userName:", userName);
 
   const dispatch = useAppDispatch();
@@ -71,7 +72,7 @@ const Friend: FC<Ifriend> = ({ userName, image, index }) => {
     <div className="user">
       <Link
         to={`/message/${userName}`}
-        state={{ isGroup: false }}
+        state={{ isGroup }}
         key={userName}
         onClick={handleScreenSize}
       >

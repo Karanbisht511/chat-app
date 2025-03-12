@@ -127,6 +127,7 @@ const FriendList: React.FC<PList> = ({ friendList, users, groups }) => {
                     image={e.image!}
                     index={index}
                     key={index}
+                    isGroup={true}
                   />
                 );
               })

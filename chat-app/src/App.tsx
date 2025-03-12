@@ -24,13 +24,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={
-            isLoggedIn !== "idle" && isLoggedIn !== "failed" ? (
-              <Chatpage />
-            ) : (
-              <Login />
-            )
-          }
+          element={isLoggedIn === "success" ? <Chatpage /> : <Login />}
         >
           <Route path="/message/:indexName" element={<Messages />} />
         </Route>
